@@ -1,10 +1,13 @@
 package com.ychstudio.components;
 
 import com.badlogic.ashley.core.Component;
-import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
 
 public class MovementComponent implements Component {
-    public final Vector2 velocity = new Vector2();
-    public float speed = 2f;
-    public float damping = 4f;
+    public float speed = 1.2f;
+    public Body body;
+
+    public MovementComponent(Body body) {
+        this.body = body;
+    }
 }
