@@ -1,0 +1,40 @@
+
+actors.png
+format: RGBA8888
+filter: Nearest,Nearest
+repeat: none
+Ghost
+  rotate: false
+  xy: 1, 19
+  size: 128, 80
+  orig: 128, 80
+  offset: 0, 0
+  index: -1
+Scores
+  rotate: false
+  xy: 131, 91
+  size: 192, 8
+  orig: 192, 8
+  offset: 0, 0
+  index: -1
+Pacman
+  rotate: false
+  xy: 131, 57
+  size: 160, 32
+  orig: 160, 32
+  offset: 0, 0
+  index: -1
+Items
+  rotate: false
+  xy: 1, 1
+  size: 128, 16
+  orig: 128, 16
+  offset: 0, 0
+  index: -1
+Pill
+  rotate: false
+  xy: 325, 91
+  size: 16, 8
+  orig: 16, 8
+  offset: 0, 0
+  index: -1
