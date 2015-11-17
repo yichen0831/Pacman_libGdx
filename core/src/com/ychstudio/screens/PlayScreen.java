@@ -16,10 +16,12 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ychstudio.PacMan;
+import com.ychstudio.b2dworldutils.WorldContactListener;
 import com.ychstudio.builders.WorldBuilder;
 import com.ychstudio.gamesys.GameManager;
 import com.ychstudio.systems.AnimationSystem;
 import com.ychstudio.systems.MovementSystem;
+import com.ychstudio.systems.PillSystem;
 import com.ychstudio.systems.PlayerSystem;
 import com.ychstudio.systems.RenderSystem;
 import com.ychstudio.systems.StateSystem;
@@ -61,12 +63,14 @@ public class PlayScreen implements Screen {
         batch = new SpriteBatch();
         engine = new Engine();
         engine.addSystem(new PlayerSystem());
+        engine.addSystem(new PillSystem());
         engine.addSystem(new MovementSystem());
         engine.addSystem(new StateSystem());
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new RenderSystem(batch));
 
         world = new World(Vector2.Zero, true);
+        world.setContactListener(new WorldContactListener(engine));
         box2DDebugRenderer = new Box2DDebugRenderer();
         showBox2DDebuggerRenderer = true;
 

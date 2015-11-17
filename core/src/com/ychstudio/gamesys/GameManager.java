@@ -19,6 +19,8 @@ public class GameManager implements Disposable {
     
     public AssetManager assetManager;
     
+    public int totalPills = 0;
+    
     private GameManager() {
         assetManager = new AssetManager();
         assetManager.load("images/actors.pack", TextureAtlas.class);

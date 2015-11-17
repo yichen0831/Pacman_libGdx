@@ -21,6 +21,7 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ychstudio.components.AnimationComponent;
 import com.ychstudio.components.MovementComponent;
+import com.ychstudio.components.PillComponent;
 import com.ychstudio.components.PlayerComponent;
 import com.ychstudio.components.StateComponent;
 import com.ychstudio.components.TextureComponent;
@@ -80,10 +81,12 @@ public class WorldBuilder {
             Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
             correctRectangle(rectangle);
 
+            boolean isBig = false;
             float radius = 0.1f;
             TextureRegion textureRegion;
 
             if (mapObject.getProperties().containsKey("big")) {
+                isBig = true;
                 radius = 0.2f;
                 textureRegion = new TextureRegion(actorAtlas.findRegion("Pill"), 8, 0, 8, 8);
             } else {
@@ -107,11 +110,15 @@ public class WorldBuilder {
             circleShape.dispose();
 
             Entity entity = new Entity();
+            entity.add(new PillComponent(isBig));
             entity.add(new TransformComponent(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2));
             entity.add(new TextureComponent(textureRegion));
+            entity.add(new MovementComponent(body));
 
             engine.addEntity(entity);
             body.setUserData(entity);
+            
+            GameManager.instance.totalPills++;
         }
 
         // player
