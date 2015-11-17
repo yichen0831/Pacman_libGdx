@@ -3,6 +3,7 @@ package com.ychstudio.screens;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL20;
@@ -13,8 +14,12 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ychstudio.PacMan;
+import com.ychstudio.builders.WorldBuilder;
 import com.ychstudio.components.MovementComponent;
 import com.ychstudio.components.PlayerComponent;
 import com.ychstudio.components.StateComponent;
@@ -42,6 +47,10 @@ public class PlayScreen implements Screen {
     
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
+    
+    private World world;
+    private Box2DDebugRenderer box2DDebugRenderer;
+    private boolean showBox2DDebuggerRenderer;
 
     public PlayScreen(PacMan game) {
         this.game = game;
@@ -75,13 +84,27 @@ public class PlayScreen implements Screen {
 
         engine.addEntity(player);
         
+        world = new World(Vector2.Zero, true);
+        box2DDebugRenderer = new Box2DDebugRenderer();
+        showBox2DDebuggerRenderer = true;
+        
         // load map
         tiledMap = new TmxMapLoader().load("map/map.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / 16f, batch);
+        
+        new WorldBuilder(tiledMap, engine, world).buildAll();
+    }
+    
+    private void handleInput() {
+        if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
+            showBox2DDebuggerRenderer = !showBox2DDebuggerRenderer;
+        }
     }
 
     @Override
     public void render(float delta) {
+        handleInput();
+        
         Gdx.gl.glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         
@@ -90,6 +113,10 @@ public class PlayScreen implements Screen {
         
         batch.setProjectionMatrix(camera.combined);
         engine.update(delta);
+        
+        if (showBox2DDebuggerRenderer) {
+            box2DDebugRenderer.render(world, camera.combined);
+        }
     }
 
     @Override
@@ -114,6 +141,8 @@ public class PlayScreen implements Screen {
     public void dispose() {
         tiledMap.dispose();
         tiledMapRenderer.dispose();
+        world.dispose();
+        box2DDebugRenderer.dispose();
     }
 
 }
