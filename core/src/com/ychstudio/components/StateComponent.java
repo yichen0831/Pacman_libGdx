@@ -32,6 +32,9 @@ public class StateComponent implements Component {
     }
     
     public void setState(int newState) {
+        if (state == newState) {
+            return;
+        }
         state = newState;
         stateTime = 0;
     }

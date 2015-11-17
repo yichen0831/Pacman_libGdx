@@ -26,6 +26,8 @@ public class PlayerSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
+        PlayerComponent player = playerM.get(entity);
+        StateComponent state = stateM.get(entity);
         MovementComponent movement = movementM.get(entity);
         Body body = movement.body;
 
@@ -41,6 +43,37 @@ public class PlayerSystem extends IteratingSystem {
         } else if (Gdx.input.isKeyPressed(Input.Keys.S)) {
             body.applyLinearImpulse(tmpV.set(0, -movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
 
+        }
+
+        if (body.getLinearVelocity().x > 0.1f) {
+            state.setState(PlayerComponent.MOVE_RIGHT);
+        } else if (body.getLinearVelocity().x < -0.1f) {
+            state.setState(PlayerComponent.MOVE_LEFT);
+        } else if (body.getLinearVelocity().y > 0.1f) {
+            state.setState(PlayerComponent.MOVE_UP);
+        } else if (body.getLinearVelocity().y < -0.1f) {
+            state.setState(PlayerComponent.MOVE_DOWN);
+        } else {
+            switch (state.getState()) {
+                case PlayerComponent.MOVE_UP:
+                case PlayerComponent.IDLE_UP:
+                    state.setState(PlayerComponent.IDLE_UP);
+                    break;
+                case PlayerComponent.MOVE_DOWN:
+                case PlayerComponent.IDLE_DOWN:
+                    state.setState(PlayerComponent.IDLE_DOWN);
+                    break;
+                case PlayerComponent.MOVE_LEFT:
+                case PlayerComponent.IDLE_LEFT:
+                    state.setState(PlayerComponent.IDLE_LEFT);
+                    break;
+                case PlayerComponent.MOVE_RIGHT:
+                case PlayerComponent.IDLE_RIGHT:
+                    state.setState(PlayerComponent.IDLE_RIGHT);
+                    break;
+                default:
+                    break;
+            }
         }
 
     }
