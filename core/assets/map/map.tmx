@@ -81,7 +81,7 @@
  <objectgroup name="Ghost">
   <object id="60" x="144" y="144" width="16" height="16"/>
  </objectgroup>
- <objectgroup name="Pills">
+ <objectgroup name="Pill">
   <object id="61" x="16" y="16" width="16" height="16"/>
   <object id="62" x="32" y="16" width="16" height="16"/>
   <object id="63" x="48" y="16" width="16" height="16"/>

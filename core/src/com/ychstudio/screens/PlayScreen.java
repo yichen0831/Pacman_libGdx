@@ -20,6 +20,7 @@ import com.ychstudio.b2dworldutils.WorldContactListener;
 import com.ychstudio.builders.WorldBuilder;
 import com.ychstudio.gamesys.GameManager;
 import com.ychstudio.systems.AnimationSystem;
+import com.ychstudio.systems.GhostSystem;
 import com.ychstudio.systems.MovementSystem;
 import com.ychstudio.systems.PillSystem;
 import com.ychstudio.systems.PlayerSystem;
@@ -63,6 +64,7 @@ public class PlayScreen implements Screen {
         batch = new SpriteBatch();
         engine = new Engine();
         engine.addSystem(new PlayerSystem());
+        engine.addSystem(new GhostSystem());
         engine.addSystem(new PillSystem());
         engine.addSystem(new MovementSystem());
         engine.addSystem(new StateSystem());

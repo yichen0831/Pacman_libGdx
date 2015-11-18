@@ -20,6 +20,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ychstudio.components.AnimationComponent;
+import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
 import com.ychstudio.components.PillComponent;
 import com.ychstudio.components.PlayerComponent;
@@ -76,7 +77,7 @@ public class WorldBuilder {
         }
 
         // pills
-        MapLayer pillLayer = mapLayers.get("Pills"); // pill layer
+        MapLayer pillLayer = mapLayers.get("Pill"); // pill layer
         for (MapObject mapObject : pillLayer.getObjects()) {
             Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
             correctRectangle(rectangle);
@@ -117,8 +118,23 @@ public class WorldBuilder {
 
             engine.addEntity(entity);
             body.setUserData(entity);
-            
+
             GameManager.instance.totalPills++;
+        }
+
+        // ghost
+        MapLayer ghostLayer = mapLayers.get("Ghost");
+        for (MapObject mapObject : ghostLayer.getObjects()) {
+            Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
+
+            correctRectangle(rectangle);
+
+            GameManager.instance.ghostSpawnPos.set(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+
+            // create four ghosts
+            for (int i = 0; i < 4; i++) {
+                createGhost(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2, i);
+            }
         }
 
         // player
@@ -127,6 +143,8 @@ public class WorldBuilder {
             Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
 
             correctRectangle(rectangle);
+
+            GameManager.instance.playerSpawnPos.set(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
 
             createPlayer(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
         }
@@ -229,6 +247,90 @@ public class WorldBuilder {
         keyFrames.clear();
 
         entity.add(animationComponent);
+
+        engine.addEntity(entity);
+        body.setUserData(entity);
+    }
+
+    private void createGhost(float x, float y, int index) {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
+        bodyDef.position.set(x, y);
+
+        Body body = world.createBody(bodyDef);
+        CircleShape circleShape = new CircleShape();
+        circleShape.setRadius(0.4f);
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = circleShape;
+        fixtureDef.filter.categoryBits = GameManager.GHOST_BIT;
+        fixtureDef.filter.maskBits = GameManager.WALL_BIT | GameManager.GATE_BIT | GameManager.PLAYER_BIT;
+        fixtureDef.isSensor = true;
+        body.createFixture(fixtureDef);
+
+        circleShape.dispose();
+
+        TextureRegion textureRegion = actorAtlas.findRegion("Ghost");
+
+        AnimationComponent anim = new AnimationComponent();
+        Animation animation;
+        Array<TextureRegion> keyFrames = new Array<>();
+        // move right
+        for (int i = 0; i < 2; i++) {
+            keyFrames.add(new TextureRegion(textureRegion, i * 16, index * 16, 16, 16));
+        }
+        animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
+        anim.animations.put(GhostComponent.MOVE_RIGHT, animation);
+
+        keyFrames.clear();
+
+        // move left
+        for (int i = 2; i < 4; i++) {
+            keyFrames.add(new TextureRegion(textureRegion, i * 16, index * 16, 16, 16));
+        }
+        animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
+        anim.animations.put(GhostComponent.MOVE_LEFT, animation);
+
+        keyFrames.clear();
+
+        // move up
+        for (int i = 4; i < 6; i++) {
+            keyFrames.add(new TextureRegion(textureRegion, i * 16, index * 16, 16, 16));
+        }
+        animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
+        anim.animations.put(GhostComponent.MOVE_UP, animation);
+
+        keyFrames.clear();
+
+        // move down
+        for (int i = 6; i < 8; i++) {
+            keyFrames.add(new TextureRegion(textureRegion, i * 16, index * 16, 16, 16));
+        }
+        animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
+        anim.animations.put(GhostComponent.MOVE_DOWN, animation);
+
+        keyFrames.clear();
+
+        // escape
+        for (int i = 0; i < 4; i++) {
+            keyFrames.add(new TextureRegion(textureRegion, i * 16, 16 * 4, 16, 16));
+        }
+        animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
+        anim.animations.put(GhostComponent.ESCAPE, animation);
+
+        // die
+        for (int i = 4; i < 8; i++) {
+            keyFrames.add(new TextureRegion(textureRegion, i * 16, 16 * 4, 16, 16));
+        }
+        animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
+        anim.animations.put(GhostComponent.DIE, animation);
+
+        Entity entity = new Entity();
+        entity.add(new GhostComponent());
+        entity.add(new TransformComponent(x, y));
+        entity.add(new MovementComponent(body));
+        entity.add(new StateComponent());
+        entity.add(new TextureComponent(new TextureRegion(textureRegion, 0, 0, 16, 16)));
+        entity.add(anim);
 
         engine.addEntity(entity);
         body.setUserData(entity);
