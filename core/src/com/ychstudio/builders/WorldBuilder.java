@@ -19,6 +19,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.ychstudio.ai.GhostAI;
 import com.ychstudio.components.AnimationComponent;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
@@ -178,7 +179,7 @@ public class WorldBuilder {
         TextureRegion textureRegion = new TextureRegion(actorAtlas.findRegion("Pacman"), 0, 0, 16, 16);
 
         PlayerComponent player = new PlayerComponent(body);
-        GameManager.instance.playerLocation = player;
+        GameManager.instance.playerLocation = player.ai;
         
         Entity entity = new Entity();
         entity.add(player);
@@ -328,7 +329,7 @@ public class WorldBuilder {
         anim.animations.put(GhostComponent.DIE, animation);
         
         GhostComponent ghostComponent = new GhostComponent(body, 0.5f);
-        ghostComponent.setBehavior(GhostComponent.WANDER_BEHAVIOR);
+        ghostComponent.ai.setBehavior(GhostAI.WANDER_BEHAVIOR);
         
         Entity entity = new Entity();
         entity.add(ghostComponent);

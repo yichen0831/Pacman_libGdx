@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.badlogic.gdx.physics.box2d.Body;
+import com.ychstudio.ai.GhostAI;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
 import com.ychstudio.components.StateComponent;
@@ -27,13 +28,13 @@ public class GhostSystem extends IteratingSystem {
         MovementComponent movement = movementM.get(entity);
         Body body = movement.body;
 
-        if (ghost.getPosition().dst2(GameManager.instance.playerLocation.getPosition()) < 25f) {
-            ghost.setBehavior(GhostComponent.ARRIVE_BEHAVIOR);
+        if (ghost.ai.getPosition().dst2(GameManager.instance.playerLocation.getPosition()) < 25f) {
+            ghost.ai.setBehavior(GhostAI.ARRIVE_BEHAVIOR);
         } else {
-            ghost.setBehavior(GhostComponent.WANDER_BEHAVIOR);
+            ghost.ai.setBehavior(GhostAI.WANDER_BEHAVIOR);
         }
 
-        ghost.update(deltaTime);
+        ghost.ai.update(deltaTime);
 
         // for updating animation
         if (body.getLinearVelocity().x > 0.1f) {
