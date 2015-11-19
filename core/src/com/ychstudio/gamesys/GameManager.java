@@ -1,5 +1,6 @@
 package com.ychstudio.gamesys;
 
+import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
@@ -24,6 +25,8 @@ public class GameManager implements Disposable {
     public Vector2 ghostSpawnPos;
     
     public int totalPills = 0;
+    
+    public Location<Vector2> playerLocation;
     
     private GameManager() {
         assetManager = new AssetManager();

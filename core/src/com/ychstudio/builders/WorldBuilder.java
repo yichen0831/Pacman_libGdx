@@ -31,12 +31,12 @@ import com.ychstudio.gamesys.GameManager;
 
 public class WorldBuilder {
 
-    private TiledMap tiledMap;
-    private World world;
-    private Engine engine;
+    private final TiledMap tiledMap;
+    private final World world;
+    private final Engine engine;
 
-    private AssetManager assetManager;
-    private TextureAtlas actorAtlas;
+    private final AssetManager assetManager;
+    private final TextureAtlas actorAtlas;
 
     public WorldBuilder(TiledMap tiledMap, Engine engine, World world) {
         this.tiledMap = tiledMap;
@@ -177,8 +177,11 @@ public class WorldBuilder {
 
         TextureRegion textureRegion = new TextureRegion(actorAtlas.findRegion("Pacman"), 0, 0, 16, 16);
 
+        PlayerComponent player = new PlayerComponent(body);
+        GameManager.instance.playerLocation = player;
+        
         Entity entity = new Entity();
-        entity.add(new PlayerComponent());
+        entity.add(player);
         entity.add(new TransformComponent(x, y));
         entity.add(new MovementComponent(body));
         entity.add(new StateComponent(PlayerComponent.IDLE_RIGHT));
@@ -323,9 +326,12 @@ public class WorldBuilder {
         }
         animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
         anim.animations.put(GhostComponent.DIE, animation);
-
+        
+        GhostComponent ghostComponent = new GhostComponent(body, 0.5f);
+        ghostComponent.setBehavior(GhostComponent.WANDER_BEHAVIOR);
+        
         Entity entity = new Entity();
-        entity.add(new GhostComponent());
+        entity.add(ghostComponent);
         entity.add(new TransformComponent(x, y));
         entity.add(new MovementComponent(body));
         entity.add(new StateComponent());
