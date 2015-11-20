@@ -8,7 +8,7 @@ import com.ychstudio.components.StateComponent;
 
 public class StateSystem extends IteratingSystem {
 
-    private ComponentMapper<StateComponent> stateM = ComponentMapper.getFor(StateComponent.class);
+    private final ComponentMapper<StateComponent> stateM = ComponentMapper.getFor(StateComponent.class);
     
     public StateSystem() {
         super(Family.all(StateComponent.class).get());

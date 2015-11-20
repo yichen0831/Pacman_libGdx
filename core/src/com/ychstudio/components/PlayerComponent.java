@@ -3,6 +3,8 @@ package com.ychstudio.components;
 import com.badlogic.ashley.core.Component;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.ychstudio.ai.PlayerAI;
+import com.ychstudio.ai.fsm.PlayerAgent;
+import com.ychstudio.ai.fsm.PlayerState;
 
 public class PlayerComponent implements Component {
 
@@ -19,8 +21,21 @@ public class PlayerComponent implements Component {
     public static final int DIE = 8;
     
     public PlayerAI ai;
+    public PlayerAgent playerAgent;
+    
+    private final Body body;
+    
+    public int currentState;
 
     public PlayerComponent(Body body) {
+        this.body = body;
         ai = new PlayerAI(body);
+        playerAgent = new PlayerAgent(this);
+        playerAgent.stateMachine.setInitialState(PlayerState.IDLE_DOWN);
+        currentState = IDLE_DOWN;
+    }
+    
+    public Body getBody() {
+        return body;
     }
 }
