@@ -19,7 +19,6 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.ychstudio.ai.SimpleGhostAI;
 import com.ychstudio.components.AnimationComponent;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
@@ -115,6 +114,7 @@ public class WorldBuilder {
             entity.add(new PillComponent(isBig));
             entity.add(new TransformComponent(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2));
             entity.add(new TextureComponent(textureRegion));
+            entity.add(new MovementComponent(body));
 
             engine.addEntity(entity);
             body.setUserData(entity);
@@ -122,7 +122,7 @@ public class WorldBuilder {
             GameManager.instance.totalPills++;
         }
 
-        // ghost
+        // ghosts
         MapLayer ghostLayer = mapLayers.get("Ghost");
         for (MapObject mapObject : ghostLayer.getObjects()) {
             Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
@@ -332,8 +332,7 @@ public class WorldBuilder {
         animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
         anim.animations.put(GhostComponent.DIE, animation);
         
-        GhostComponent ghostComponent = new GhostComponent(body, 0.5f);
-        ghostComponent.ai.setBehavior(SimpleGhostAI.WANDER_BEHAVIOR);
+        GhostComponent ghostComponent = new GhostComponent(body);
         
         Entity entity = new Entity();
         entity.add(ghostComponent);

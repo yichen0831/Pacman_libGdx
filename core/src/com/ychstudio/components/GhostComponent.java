@@ -21,7 +21,7 @@ public class GhostComponent implements Component {
     
     public int currentState;
 
-    public GhostComponent(Body body, float boundingRadius) {
+    public GhostComponent(Body body) {
         this.body = body;
         ghostAgent = new GhostAgent(this);
         ghostAgent.stateMachine.setInitialState(GhostState.MOVE_UP);

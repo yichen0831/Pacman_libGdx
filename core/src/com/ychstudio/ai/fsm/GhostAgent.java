@@ -15,8 +15,7 @@ public class GhostAgent implements Telegraph {
 
     public GhostComponent ghostComponent;
 
-    public float acceleration = 2f;
-    public float speed = 2f;
+    public float speed = 2.4f;
 
     private Location<Vector2> target;
     

@@ -21,18 +21,18 @@ public enum GhostState implements State<GhostAgent> {
         public void update(GhostAgent entity) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_UP;
 
-            entity.ghostComponent.getBody().applyForceToCenter(0, entity.acceleration, true);
-            if (entity.ghostComponent.getBody().getLinearVelocity().len2() > entity.speed * entity.speed) {
-                entity.ghostComponent.getBody().setLinearVelocity(entity.ghostComponent.getBody().getLinearVelocity().scl(entity.speed / entity.ghostComponent.getBody().getLinearVelocity().len()));
+            Body body = entity.ghostComponent.getBody();
+            body.applyLinearImpulse(tmpV1.set(0, entity.speed).scl(body.getMass()), body.getWorldCenter(), true);
+
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
             if (checkHitWall(entity, GhostComponent.MOVE_UP)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_DOWN)));
             }
 
-            // TODO: make turing probability
-            // check if there is way for turing every certain distance
-            if (entity.timer > 0.5f) {
+            if (entity.timer > 0.5f && inPosition(entity)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_DOWN));
                 if (newState != entity.ghostComponent.currentState) {
@@ -47,18 +47,18 @@ public enum GhostState implements State<GhostAgent> {
         public void update(GhostAgent entity) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_DOWN;
 
-            entity.ghostComponent.getBody().applyForceToCenter(0, -entity.acceleration, true);
-            if (entity.ghostComponent.getBody().getLinearVelocity().len2() > entity.speed * entity.speed) {
-                entity.ghostComponent.getBody().setLinearVelocity(entity.ghostComponent.getBody().getLinearVelocity().scl(entity.speed / entity.ghostComponent.getBody().getLinearVelocity().len()));
+            Body body = entity.ghostComponent.getBody();
+            body.applyLinearImpulse(tmpV1.set(0, -entity.speed).scl(body.getMass()), body.getWorldCenter(), true);
+
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
             if (checkHitWall(entity, GhostComponent.MOVE_DOWN)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP)));
             }
 
-            // TODO: make turing probability
-            // check if there is way for turing every certain distance
-            if (entity.timer > 0.5f) {
+            if (entity.timer > 0.5f && inPosition(entity)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP));
                 if (newState != entity.ghostComponent.currentState) {
@@ -72,18 +72,18 @@ public enum GhostState implements State<GhostAgent> {
         public void update(GhostAgent entity) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_LEFT;
 
-            entity.ghostComponent.getBody().applyForceToCenter(-entity.acceleration, 0, true);
-            if (entity.ghostComponent.getBody().getLinearVelocity().len2() > entity.speed * entity.speed) {
-                entity.ghostComponent.getBody().setLinearVelocity(entity.ghostComponent.getBody().getLinearVelocity().scl(entity.speed / entity.ghostComponent.getBody().getLinearVelocity().len()));
+            Body body = entity.ghostComponent.getBody();
+            body.applyLinearImpulse(tmpV1.set(-entity.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
+
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
             if (checkHitWall(entity, GhostComponent.MOVE_LEFT)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_RIGHT)));
             }
 
-            // TODO: make turing probability
-            // check if there is way for turing every certain distance
-            if (entity.timer > 0.5f) {
+            if (entity.timer > 0.5f && inPosition(entity)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_RIGHT));
                 if (newState != entity.ghostComponent.currentState) {
@@ -96,19 +96,19 @@ public enum GhostState implements State<GhostAgent> {
         @Override
         public void update(GhostAgent entity) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_RIGHT;
-
-            entity.ghostComponent.getBody().applyForceToCenter(entity.acceleration, 0, true);
-            if (entity.ghostComponent.getBody().getLinearVelocity().len2() > entity.speed * entity.speed) {
-                entity.ghostComponent.getBody().setLinearVelocity(entity.ghostComponent.getBody().getLinearVelocity().scl(entity.speed / entity.ghostComponent.getBody().getLinearVelocity().len()));
+            
+            Body body = entity.ghostComponent.getBody();
+            body.applyLinearImpulse(tmpV1.set(entity.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
+            
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
             if (checkHitWall(entity, GhostComponent.MOVE_RIGHT)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_LEFT)));
             }
 
-            // TODO: make turing probability
-            // check if there is way for turing every certain distance
-            if (entity.timer > 0.5f) {
+            if (entity.timer > 0.5f && inPosition(entity)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_LEFT));
                 if (newState != entity.ghostComponent.currentState) {
@@ -130,6 +130,20 @@ public enum GhostState implements State<GhostAgent> {
         }
 
     };
+
+    private static boolean inPosition(GhostAgent entity) {
+        Body body = entity.ghostComponent.getBody();
+        float x = body.getPosition().x;
+        float y = body.getPosition().y;
+
+        float xLow = MathUtils.floor(x) + 0.4f;
+        float xHight = MathUtils.floor(x) + 0.6f;
+
+        float yLow = MathUtils.floor(y) + 0.4f;
+        float yHight = MathUtils.floor(y) + 0.6f;
+
+        return xLow < x && x < xHight && yLow < y && y < yHight;
+    }
 
     private static void changeState(GhostAgent entity, int state) {
         switch (state) {

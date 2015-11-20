@@ -11,8 +11,8 @@ import com.ychstudio.gamesys.GameManager;
 
 public class PillSystem extends IteratingSystem {
 
-    private ComponentMapper<PillComponent> pillM = ComponentMapper.getFor(PillComponent.class);
-    private ComponentMapper<MovementComponent> movementM = ComponentMapper.getFor(MovementComponent.class);
+    private final ComponentMapper<PillComponent> pillM = ComponentMapper.getFor(PillComponent.class);
+    private final ComponentMapper<MovementComponent> movementM = ComponentMapper.getFor(MovementComponent.class);
 
     public PillSystem() {
         super(Family.all(PillComponent.class, MovementComponent.class).get());
@@ -20,7 +20,7 @@ public class PillSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-
+        
         PillComponent pill = pillM.get(entity);
         MovementComponent movement = movementM.get(entity);
 
