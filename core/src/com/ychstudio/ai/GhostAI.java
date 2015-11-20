@@ -39,7 +39,7 @@ public class GhostAI implements Steerable<Vector2> {
     public GhostAI(Body body, float boundingRadius) {
         this.body = body;
         this.boundingRadius = boundingRadius;
-        
+
         tagged = false;
         maxAngularAcceleration = 1.0f;
         maxLinearAcceleration = 1.0f;

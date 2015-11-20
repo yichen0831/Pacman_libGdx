@@ -13,7 +13,7 @@ public enum PlayerState implements State<PlayerAgent> {
             entity.playerComponent.currentState = PlayerComponent.MOVE_UP;
             if (entity.playerComponent.getBody().getLinearVelocity().y < SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_UP);
-            } 
+            }
         }
     },
     MOVE_DOWN() {
@@ -22,7 +22,7 @@ public enum PlayerState implements State<PlayerAgent> {
             entity.playerComponent.currentState = PlayerComponent.MOVE_DOWN;
             if (entity.playerComponent.getBody().getLinearVelocity().y > -SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_DOWN);
-            } 
+            }
         }
 
     },
@@ -32,7 +32,7 @@ public enum PlayerState implements State<PlayerAgent> {
             entity.playerComponent.currentState = PlayerComponent.MOVE_LEFT;
             if (entity.playerComponent.getBody().getLinearVelocity().x > -SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_LEFT);
-            } 
+            }
         }
 
     },
@@ -42,7 +42,7 @@ public enum PlayerState implements State<PlayerAgent> {
             entity.playerComponent.currentState = PlayerComponent.MOVE_RIGHT;
             if (entity.playerComponent.getBody().getLinearVelocity().x < SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_RIGHT);
-            } 
+            }
         }
 
     },
@@ -78,15 +78,18 @@ public enum PlayerState implements State<PlayerAgent> {
         }
 
     };
-    
+
     private static final float SPEED_THRESHOLD = 0.5f;
 
     private static void changeStateUponVelocity(PlayerAgent entity) {
         Vector2 velocity = entity.playerComponent.getBody().getLinearVelocity();
-        if (velocity.x >= SPEED_THRESHOLD) {
-            entity.stateMachine.changeState(MOVE_RIGHT);
-        } else if (velocity.x <= -SPEED_THRESHOLD) {
-            entity.stateMachine.changeState(MOVE_LEFT);
+
+        if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+            if (velocity.x >= SPEED_THRESHOLD) {
+                entity.stateMachine.changeState(MOVE_RIGHT);
+            } else if (velocity.x <= -SPEED_THRESHOLD) {
+                entity.stateMachine.changeState(MOVE_LEFT);
+            }
         } else if (velocity.y >= SPEED_THRESHOLD) {
             entity.stateMachine.changeState(MOVE_UP);
         } else if (velocity.y <= -SPEED_THRESHOLD) {

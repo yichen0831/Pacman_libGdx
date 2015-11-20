@@ -2,6 +2,7 @@ package com.ychstudio.ai.fsm;
 
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
+import com.badlogic.gdx.math.Vector2;
 import com.ychstudio.components.GhostComponent;
 
 public enum GhostState implements State<GhostAgent> {
@@ -50,16 +51,20 @@ public enum GhostState implements State<GhostAgent> {
     };
 
     private static void changeStateUponVelocity(GhostAgent entity) {
-        if (entity.ghostComponent.getBody().getLinearVelocity().x > 0.1f) {
-            entity.ghostComponent.currentState = GhostComponent.MOVE_RIGHT;
+        Vector2 velocity = entity.ghostComponent.getBody().getLinearVelocity();
 
-        } else if (entity.ghostComponent.getBody().getLinearVelocity().x < -0.1f) {
-            entity.ghostComponent.currentState = GhostComponent.MOVE_LEFT;
+        if (Math.abs(velocity.x) > Math.abs(velocity.y)) {
+            if (velocity.x > 0.1f) {
+                entity.ghostComponent.currentState = GhostComponent.MOVE_RIGHT;
 
-        } else if (entity.ghostComponent.getBody().getLinearVelocity().y > 0.1f) {
+            } else if (velocity.x < -0.1f) {
+                entity.ghostComponent.currentState = GhostComponent.MOVE_LEFT;
+
+            }
+        } else if (velocity.y > 0.1f) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_UP;
 
-        } else if (entity.ghostComponent.getBody().getLinearVelocity().y < -0.1f) {
+        } else if (velocity.y < -0.1f) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_DOWN;
 
         }
