@@ -36,20 +36,9 @@ public class GhostSystem extends IteratingSystem {
 
         ghost.ai.update(deltaTime);
 
-        // for updating animation
-        if (body.getLinearVelocity().x > 0.1f) {
-            state.setState(GhostComponent.MOVE_RIGHT);
-
-        } else if (body.getLinearVelocity().x < -0.1f) {
-            state.setState(GhostComponent.MOVE_LEFT);
-
-        } else if (body.getLinearVelocity().y > 0.1f) {
-            state.setState(GhostComponent.MOVE_UP);
-
-        } else if (body.getLinearVelocity().y < -0.1f) {
-            state.setState(GhostComponent.MOVE_DOWN);
-
-        }
+        ghost.ghostAgent.stateMachine.update();
+        state.setState(ghost.currentState);
+        
     }
 
 }
