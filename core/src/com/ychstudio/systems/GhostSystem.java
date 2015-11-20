@@ -4,39 +4,24 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.ychstudio.ai.GhostAI;
 import com.ychstudio.components.GhostComponent;
-import com.ychstudio.components.MovementComponent;
 import com.ychstudio.components.StateComponent;
-import com.ychstudio.gamesys.GameManager;
 
 public class GhostSystem extends IteratingSystem {
 
     private final ComponentMapper<GhostComponent> ghostM = ComponentMapper.getFor(GhostComponent.class);
-    private final ComponentMapper<MovementComponent> movementM = ComponentMapper.getFor(MovementComponent.class);
     private final ComponentMapper<StateComponent> stateM = ComponentMapper.getFor(StateComponent.class);
 
     public GhostSystem() {
-        super(Family.all(GhostComponent.class, MovementComponent.class, StateComponent.class).get());
+        super(Family.all(GhostComponent.class, StateComponent.class).get());
     }
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         GhostComponent ghost = ghostM.get(entity);
         StateComponent state = stateM.get(entity);
-        MovementComponent movement = movementM.get(entity);
-        Body body = movement.body;
 
-        if (ghost.ai.getPosition().dst2(GameManager.instance.playerLocation.getPosition()) < 25f) {
-            ghost.ai.setBehavior(GhostAI.ARRIVE_BEHAVIOR);
-        } else {
-            ghost.ai.setBehavior(GhostAI.WANDER_BEHAVIOR);
-        }
-
-        ghost.ai.update(deltaTime);
-
-        ghost.ghostAgent.stateMachine.update();
+        ghost.ghostAgent.update(deltaTime);
         state.setState(ghost.currentState);
         
     }

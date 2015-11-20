@@ -19,7 +19,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
-import com.ychstudio.ai.GhostAI;
+import com.ychstudio.ai.SimpleGhostAI;
 import com.ychstudio.components.AnimationComponent;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
@@ -115,7 +115,6 @@ public class WorldBuilder {
             entity.add(new PillComponent(isBig));
             entity.add(new TransformComponent(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2));
             entity.add(new TextureComponent(textureRegion));
-            entity.add(new MovementComponent(body));
 
             engine.addEntity(entity);
             body.setUserData(entity);
@@ -267,8 +266,13 @@ public class WorldBuilder {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.filter.categoryBits = GameManager.GHOST_BIT;
-        fixtureDef.filter.maskBits = GameManager.WALL_BIT | GameManager.GATE_BIT | GameManager.PLAYER_BIT;
+        fixtureDef.filter.maskBits =GameManager.PLAYER_BIT;
         fixtureDef.isSensor = true;
+        body.createFixture(fixtureDef);
+        
+        fixtureDef.filter.categoryBits = GameManager.GHOST_BIT;
+        fixtureDef.filter.maskBits = GameManager.WALL_BIT | GameManager.GATE_BIT;
+        fixtureDef.isSensor = false;
         body.createFixture(fixtureDef);
 
         circleShape.dispose();
@@ -329,7 +333,7 @@ public class WorldBuilder {
         anim.animations.put(GhostComponent.DIE, animation);
         
         GhostComponent ghostComponent = new GhostComponent(body, 0.5f);
-        ghostComponent.ai.setBehavior(GhostAI.WANDER_BEHAVIOR);
+        ghostComponent.ai.setBehavior(SimpleGhostAI.WANDER_BEHAVIOR);
         
         Entity entity = new Entity();
         entity.add(ghostComponent);

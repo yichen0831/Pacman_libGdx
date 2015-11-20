@@ -31,8 +31,8 @@ public class PlayerComponent implements Component {
         this.body = body;
         ai = new PlayerAI(body);
         playerAgent = new PlayerAgent(this);
-        playerAgent.stateMachine.setInitialState(PlayerState.IDLE_DOWN);
-        currentState = IDLE_DOWN;
+        playerAgent.stateMachine.setInitialState(PlayerState.IDLE_RIGHT);
+        currentState = IDLE_RIGHT;
     }
     
     public Body getBody() {
