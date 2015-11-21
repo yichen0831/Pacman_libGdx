@@ -13,25 +13,31 @@ import com.ychstudio.gamesys.GameManager;
 
 public class RenderSystem extends IteratingSystem {
 
-    private Array<Entity> renderArray;
-    
-    private SpriteBatch batch;
-    
-    private ComponentMapper<TransformComponent> transformM = ComponentMapper.getFor(TransformComponent.class);
-    private ComponentMapper<TextureComponent> rendererM = ComponentMapper.getFor(TextureComponent.class);
-    
+    private final Array<Entity> renderArray;
+
+    private final SpriteBatch batch;
+
+    private final ComponentMapper<TransformComponent> transformM = ComponentMapper.getFor(TransformComponent.class);
+    private final ComponentMapper<TextureComponent> rendererM = ComponentMapper.getFor(TextureComponent.class);
+
     public RenderSystem(SpriteBatch batch) {
         super(Family.all(TransformComponent.class, TextureComponent.class).get());
-        
+
         this.batch = batch;
-        
+
         renderArray = new Array<>();
     }
 
     @Override
     public void update(float deltaTime) {
-        super.update(deltaTime); 
-        
+        super.update(deltaTime);
+
+        renderArray.sort((Entity o1, Entity o2) -> {
+            TransformComponent transform1 = transformM.get(o1);
+            TransformComponent transform2 = transformM.get(o2);
+            return transform2.zIndex - transform1.zIndex;
+        });
+
         batch.begin();
         for (Entity entity : renderArray) {
             TransformComponent transform = transformM.get(entity);
@@ -40,23 +46,21 @@ public class RenderSystem extends IteratingSystem {
             float height = tex.region.getRegionHeight() / GameManager.PPM;
             float originX = width * 0.5f;
             float originY = height * 0.5f;
-            batch.draw(tex.region, 
-                    transform.pos.x - originX, transform.pos.y - originY, 
-                    originX, originY, 
-                    width, height, 
-                    transform.scale.x, transform.scale.y, 
+            batch.draw(tex.region,
+                    transform.pos.x - originX, transform.pos.y - originY,
+                    originX, originY,
+                    width, height,
+                    transform.scale.x, transform.scale.y,
                     transform.rotation * MathUtils.radiansToDegrees);
         }
-        
+
         batch.end();
         renderArray.clear();
     }
 
-    
-    
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
         renderArray.add(entity);
     }
-    
+
 }

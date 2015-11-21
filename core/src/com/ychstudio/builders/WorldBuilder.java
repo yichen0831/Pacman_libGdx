@@ -112,7 +112,7 @@ public class WorldBuilder {
 
             Entity entity = new Entity();
             entity.add(new PillComponent(isBig));
-            entity.add(new TransformComponent(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2));
+            entity.add(new TransformComponent(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2, 5));
             entity.add(new TextureComponent(textureRegion));
             entity.add(new MovementComponent(body));
 
@@ -182,7 +182,7 @@ public class WorldBuilder {
 
         Entity entity = new Entity();
         entity.add(player);
-        entity.add(new TransformComponent(x, y));
+        entity.add(new TransformComponent(x, y, 1));
         entity.add(new MovementComponent(body));
         entity.add(new StateComponent(PlayerComponent.IDLE_RIGHT));
         entity.add(new TextureComponent(textureRegion));
@@ -345,7 +345,7 @@ public class WorldBuilder {
 
         Entity entity = new Entity();
         entity.add(ghostComponent);
-        entity.add(new TransformComponent(x, y));
+        entity.add(new TransformComponent(x, y, 3));
         entity.add(new MovementComponent(body));
         entity.add(new StateComponent());
         entity.add(new TextureComponent(new TextureRegion(textureRegion, 0, 0, 16, 16)));
