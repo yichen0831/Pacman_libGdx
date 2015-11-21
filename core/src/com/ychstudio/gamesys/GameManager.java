@@ -29,6 +29,8 @@ public class GameManager implements Disposable {
     public int highScore = 0;
     public int score = 0;
 
+    public int playerLives = 3;
+
     public Location<Vector2> playerLocation;
 
     private GameManager() {
@@ -39,6 +41,14 @@ public class GameManager implements Disposable {
 
         playerSpawnPos = new Vector2();
         ghostSpawnPos = new Vector2();
+    }
+
+    public void decreasePlayerLives() {
+        playerLives--;
+    }
+
+    public void resetPlayerLives() {
+        playerLives = 3;
     }
 
     public void addScore(int score) {

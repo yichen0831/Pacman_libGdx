@@ -16,18 +16,23 @@ public class GhostComponent implements Component {
     public static final int DIE = 5;
 
     public GhostAgent ghostAgent;
-    
+
     private final Body body;
-    
+
     public int currentState;
+
+    public boolean weaken;
+    public int hp;
 
     public GhostComponent(Body body) {
         this.body = body;
         ghostAgent = new GhostAgent(this);
         ghostAgent.stateMachine.setInitialState(GhostState.MOVE_UP);
         currentState = MOVE_UP;
+        weaken = false;
+        hp = 1;
     }
-    
+
     public Body getBody() {
         return body;
     }

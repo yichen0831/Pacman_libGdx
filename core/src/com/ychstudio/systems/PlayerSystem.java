@@ -22,8 +22,8 @@ public class PlayerSystem extends IteratingSystem {
     private final ComponentMapper<MovementComponent> movementM = ComponentMapper.getFor(MovementComponent.class);
     private final ComponentMapper<StateComponent> stateM = ComponentMapper.getFor(StateComponent.class);
 
-    private Vector2 tmpV1 = new Vector2();
-    private Vector2 tmpV2 = new Vector2();
+    private final Vector2 tmpV1 = new Vector2();
+    private final Vector2 tmpV2 = new Vector2();
     private boolean canMove;
 
     private enum MoveDir {
@@ -44,20 +44,22 @@ public class PlayerSystem extends IteratingSystem {
         MovementComponent movement = movementM.get(entity);
         Body body = movement.body;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.D) && checkMovable(body, MoveDir.RIGHT)) {
-            body.applyLinearImpulse(tmpV1.set(movement.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
+        if (player.hp > 0) {
+            if (Gdx.input.isKeyPressed(Input.Keys.D) && checkMovable(body, MoveDir.RIGHT)) {
+                body.applyLinearImpulse(tmpV1.set(movement.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.A) && checkMovable(body, MoveDir.LEFT)) {
-            body.applyLinearImpulse(tmpV1.set(-movement.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.A) && checkMovable(body, MoveDir.LEFT)) {
+                body.applyLinearImpulse(tmpV1.set(-movement.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.W) && checkMovable(body, MoveDir.UP)) {
-            body.applyLinearImpulse(tmpV1.set(0, movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.W) && checkMovable(body, MoveDir.UP)) {
+                body.applyLinearImpulse(tmpV1.set(0, movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
 
-        } else if (Gdx.input.isKeyPressed(Input.Keys.S) && checkMovable(body, MoveDir.DOWN)) {
-            body.applyLinearImpulse(tmpV1.set(0, -movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
+            } else if (Gdx.input.isKeyPressed(Input.Keys.S) && checkMovable(body, MoveDir.DOWN)) {
+                body.applyLinearImpulse(tmpV1.set(0, -movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
 
+            }
         }
-        
+
         player.playerAgent.update(deltaTime);
         state.setState(player.currentState);
     }
@@ -98,7 +100,7 @@ public class PlayerSystem extends IteratingSystem {
 
             world.rayCast(rayCastCallback, tmpV1, tmpV2);
         }
-        
+
         return canMove;
     }
 }

@@ -1,7 +1,6 @@
 package com.ychstudio.b2dworldutils;
 
 import com.badlogic.ashley.core.ComponentMapper;
-import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
@@ -9,17 +8,18 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.PillComponent;
+import com.ychstudio.components.PlayerComponent;
 import com.ychstudio.gamesys.GameManager;
 
 public class WorldContactListener implements ContactListener {
 
-    private Engine engine;
+    private final ComponentMapper<PillComponent> pillM = ComponentMapper.getFor(PillComponent.class);
+    private final ComponentMapper<GhostComponent> ghostM = ComponentMapper.getFor(GhostComponent.class);
+    private final ComponentMapper<PlayerComponent> playerM = ComponentMapper.getFor(PlayerComponent.class);
 
-    private ComponentMapper<PillComponent> pillM = ComponentMapper.getFor(PillComponent.class);
-
-    public WorldContactListener(Engine engine) {
-        this.engine = engine;
+    public WorldContactListener() {
     }
 
     @Override
@@ -38,6 +38,34 @@ public class WorldContactListener implements ContactListener {
                 Entity entity = (Entity) body.getUserData();
                 PillComponent pill = pillM.get(entity);
                 pill.eaten = true;
+            }
+        } else if (fixtureA.getFilterData().categoryBits == GameManager.GHOST_BIT || fixtureB.getFilterData().categoryBits == GameManager.GHOST_BIT) {
+            if (fixtureA.getFilterData().categoryBits == GameManager.PLAYER_BIT) {
+                PlayerComponent player = playerM.get((Entity) fixtureA.getBody().getUserData());
+                GhostComponent ghost = ghostM.get((Entity) fixtureB.getBody().getUserData());
+
+                if (ghost.weaken) {
+                    // kill ghost
+                    ghost.hp--;
+
+                } else {
+                    // kill player
+                    player.hp--;
+                }
+
+            } else if (fixtureB.getFilterData().categoryBits == GameManager.PLAYER_BIT) {
+                PlayerComponent player = playerM.get((Entity) fixtureB.getBody().getUserData());
+                GhostComponent ghost = ghostM.get((Entity) fixtureA.getBody().getUserData());
+
+                if (ghost.weaken) {
+                    // kill ghost
+                    ghost.hp--;
+
+                } else {
+                    // kill player
+                    player.hp--;
+                }
+
             }
         }
     }

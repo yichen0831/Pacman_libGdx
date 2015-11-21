@@ -179,7 +179,7 @@ public class WorldBuilder {
 
         PlayerComponent player = new PlayerComponent(body);
         GameManager.instance.playerLocation = player.ai;
-        
+
         Entity entity = new Entity();
         entity.add(player);
         entity.add(new TransformComponent(x, y));
@@ -249,6 +249,15 @@ public class WorldBuilder {
 
         keyFrames.clear();
 
+        for (int i = 0; i < 10; i++) {
+            keyFrames.add(new TextureRegion(actorAtlas.findRegion("Pacman"), i * 16, 16, 16, 16));
+        }
+        keyFrames.add(new TextureRegion(actorAtlas.findRegion("Pacman"), 9 * 16, 0, 16, 16)); // invisible
+        animation = new Animation(0.1f, keyFrames, Animation.PlayMode.NORMAL);
+        animationComponent.animations.put(PlayerComponent.DIE, animation);
+
+        keyFrames.clear();
+
         entity.add(animationComponent);
 
         engine.addEntity(entity);
@@ -266,10 +275,10 @@ public class WorldBuilder {
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circleShape;
         fixtureDef.filter.categoryBits = GameManager.GHOST_BIT;
-        fixtureDef.filter.maskBits =GameManager.PLAYER_BIT;
+        fixtureDef.filter.maskBits = GameManager.PLAYER_BIT;
         fixtureDef.isSensor = true;
         body.createFixture(fixtureDef);
-        
+
         fixtureDef.filter.categoryBits = GameManager.GHOST_BIT;
         fixtureDef.filter.maskBits = GameManager.WALL_BIT | GameManager.GATE_BIT;
         fixtureDef.isSensor = false;
@@ -331,9 +340,9 @@ public class WorldBuilder {
         }
         animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
         anim.animations.put(GhostComponent.DIE, animation);
-        
+
         GhostComponent ghostComponent = new GhostComponent(body);
-        
+
         Entity entity = new Entity();
         entity.add(ghostComponent);
         entity.add(new TransformComponent(x, y));

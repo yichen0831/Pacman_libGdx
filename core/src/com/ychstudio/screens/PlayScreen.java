@@ -82,7 +82,7 @@ public class PlayScreen implements Screen {
         engine.addSystem(new RenderSystem(batch));
 
         world = new World(Vector2.Zero, true);
-        world.setContactListener(new WorldContactListener(engine));
+        world.setContactListener(new WorldContactListener());
         box2DDebugRenderer = new Box2DDebugRenderer();
         showBox2DDebuggerRenderer = true;
 

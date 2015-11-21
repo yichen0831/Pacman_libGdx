@@ -4,6 +4,7 @@ import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.Vector2;
 import com.ychstudio.components.PlayerComponent;
+import com.ychstudio.gamesys.GameManager;
 
 public enum PlayerState implements State<PlayerAgent> {
 
@@ -14,6 +15,10 @@ public enum PlayerState implements State<PlayerAgent> {
             if (entity.playerComponent.getBody().getLinearVelocity().y < SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_UP);
             }
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
     },
     MOVE_DOWN() {
@@ -22,6 +27,10 @@ public enum PlayerState implements State<PlayerAgent> {
             entity.playerComponent.currentState = PlayerComponent.MOVE_DOWN;
             if (entity.playerComponent.getBody().getLinearVelocity().y > -SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_DOWN);
+            }
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
             }
         }
 
@@ -33,6 +42,10 @@ public enum PlayerState implements State<PlayerAgent> {
             if (entity.playerComponent.getBody().getLinearVelocity().x > -SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_LEFT);
             }
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
 
     },
@@ -43,6 +56,10 @@ public enum PlayerState implements State<PlayerAgent> {
             if (entity.playerComponent.getBody().getLinearVelocity().x < SPEED_THRESHOLD) {
                 entity.stateMachine.changeState(IDLE_RIGHT);
             }
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
 
     },
@@ -51,6 +68,10 @@ public enum PlayerState implements State<PlayerAgent> {
         public void update(PlayerAgent entity) {
             entity.playerComponent.currentState = PlayerComponent.IDLE_UP;
             changeStateUponVelocity(entity);
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
 
     },
@@ -59,6 +80,10 @@ public enum PlayerState implements State<PlayerAgent> {
         public void update(PlayerAgent entity) {
             entity.playerComponent.currentState = PlayerComponent.IDLE_DOWN;
             changeStateUponVelocity(entity);
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
 
     },
@@ -67,6 +92,10 @@ public enum PlayerState implements State<PlayerAgent> {
         public void update(PlayerAgent entity) {
             entity.playerComponent.currentState = PlayerComponent.IDLE_LEFT;
             changeStateUponVelocity(entity);
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
 
     },
@@ -75,6 +104,27 @@ public enum PlayerState implements State<PlayerAgent> {
         public void update(PlayerAgent entity) {
             entity.playerComponent.currentState = PlayerComponent.IDLE_RIGHT;
             changeStateUponVelocity(entity);
+
+            if (entity.playerComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
+        }
+
+    },
+    DIE() {
+        @Override
+        public void update(PlayerAgent entity) {
+            entity.playerComponent.currentState = PlayerComponent.DIE;
+
+            // re-spawn player
+            if (entity.timer > 1.5f) {
+                GameManager.instance.decreasePlayerLives();
+                if (GameManager.instance.playerLives > 0) {
+                    entity.playerComponent.getBody().setTransform(GameManager.instance.playerSpawnPos, 0);
+                    entity.playerComponent.hp = 1;
+                    entity.stateMachine.changeState(IDLE_RIGHT);
+                }
+            }
         }
 
     };
@@ -99,6 +149,7 @@ public enum PlayerState implements State<PlayerAgent> {
 
     @Override
     public void enter(PlayerAgent entity) {
+        entity.timer = 0;
     }
 
     @Override

@@ -19,13 +19,15 @@ public class PlayerComponent implements Component {
     public static final int MOVE_LEFT = 6;
     public static final int MOVE_RIGHT = 7;
     public static final int DIE = 8;
-    
+
     public PlayerAI ai;
     public PlayerAgent playerAgent;
-    
+
     private final Body body;
-    
+
     public int currentState;
+
+    public int hp;
 
     public PlayerComponent(Body body) {
         this.body = body;
@@ -33,8 +35,9 @@ public class PlayerComponent implements Component {
         playerAgent = new PlayerAgent(this);
         playerAgent.stateMachine.setInitialState(PlayerState.IDLE_RIGHT);
         currentState = IDLE_RIGHT;
+        hp = 1;
     }
-    
+
     public Body getBody() {
         return body;
     }
