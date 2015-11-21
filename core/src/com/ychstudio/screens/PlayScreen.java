@@ -4,9 +4,10 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -14,6 +15,8 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.ychstudio.PacMan;
 import com.ychstudio.b2dworldutils.WorldContactListener;
@@ -32,9 +35,8 @@ public class PlayScreen implements Screen {
     private final float WIDTH = 19.0f;
     private final float HEIGHT = 23.0f;
 
-    private PacMan game;
+    private final PacMan game;
     private SpriteBatch batch;
-    private AssetManager assetManager;
 
     private FitViewport viewport;
     private OrthographicCamera camera;
@@ -43,6 +45,15 @@ public class PlayScreen implements Screen {
 
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
+
+    private BitmapFont font;
+    private FitViewport stageViewport;
+    private Stage stage;
+
+    private Label scoreLabel;
+    private Label highScoreLabel;
+
+    private StringBuilder stringBuilder;
 
     private World world;
     private Box2DDebugRenderer box2DDebugRenderer;
@@ -55,7 +66,6 @@ public class PlayScreen implements Screen {
 
     @Override
     public void show() {
-        assetManager = GameManager.instance.assetManager;
         camera = new OrthographicCamera();
         viewport = new FitViewport(WIDTH, HEIGHT, camera);
         camera.translate(WIDTH / 2, HEIGHT / 2);
@@ -81,6 +91,28 @@ public class PlayScreen implements Screen {
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / 16f, batch);
 
         new WorldBuilder(tiledMap, engine, world).buildAll();
+
+        stageViewport = new FitViewport(WIDTH * 20, HEIGHT * 20);
+        stage = new Stage(stageViewport, batch);
+
+        font = new BitmapFont(Gdx.files.internal("fonts/army_stencil.fnt"));
+        Label scoreTextLabel = new Label("SCORE", new Label.LabelStyle(font, Color.WHITE));
+        scoreTextLabel.setPosition(WIDTH * 1, HEIGHT * 19);
+        stage.addActor(scoreTextLabel);
+
+        Label hightScoreTextLabel = new Label("High Score", new Label.LabelStyle(font, Color.WHITE));
+        hightScoreTextLabel.setPosition(WIDTH * 14, HEIGHT * 19);
+        stage.addActor(hightScoreTextLabel);
+
+        scoreLabel = new Label("0", new Label.LabelStyle(font, Color.WHITE));
+        scoreLabel.setPosition(WIDTH * 1.5f, HEIGHT * 18.2f);
+        stage.addActor(scoreLabel);
+
+        highScoreLabel = new Label("0", new Label.LabelStyle(font, Color.WHITE));
+        highScoreLabel.setPosition(WIDTH * 16.5f, HEIGHT * 18.2f);
+        stage.addActor(highScoreLabel);
+
+        stringBuilder = new StringBuilder();
     }
 
     private void handleInput() {
@@ -107,11 +139,19 @@ public class PlayScreen implements Screen {
         if (showBox2DDebuggerRenderer) {
             box2DDebugRenderer.render(world, camera.combined);
         }
+
+        // update score
+        stringBuilder.setLength(0);
+        scoreLabel.setText(stringBuilder.append(GameManager.instance.score).toString());
+        stringBuilder.setLength(0);
+        highScoreLabel.setText(stringBuilder.append(GameManager.instance.highScore).toString());
+        stage.draw();
     }
 
     @Override
     public void resize(int width, int height) {
         viewport.update(width, height);
+        stageViewport.update(width, height);
     }
 
     @Override
@@ -129,6 +169,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
+        stage.dispose();
         tiledMap.dispose();
         tiledMapRenderer.dispose();
         world.dispose();

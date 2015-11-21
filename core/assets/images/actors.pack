@@ -33,8 +33,8 @@ Items
   index: -1
 Pill
   rotate: false
-  xy: 325, 91
-  size: 16, 8
-  orig: 16, 8
+  xy: 131, 39
+  size: 32, 16
+  orig: 32, 16
   offset: 0, 0
   index: -1

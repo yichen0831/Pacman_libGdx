@@ -20,15 +20,21 @@ public class PillSystem extends IteratingSystem {
 
     @Override
     protected void processEntity(Entity entity, float deltaTime) {
-        
+
         PillComponent pill = pillM.get(entity);
         MovementComponent movement = movementM.get(entity);
 
         Body body = movement.body;
         if (pill.eaten) {
+            if (pill.big) {
+                GameManager.instance.addScore(500);
+            } else {
+                GameManager.instance.addScore(100);
+            }
+
             body.getWorld().destroyBody(body);
             getEngine().removeEntity(entity);
-            
+
             GameManager.instance.totalPills--;
         }
 

@@ -89,9 +89,9 @@ public class WorldBuilder {
             if (mapObject.getProperties().containsKey("big")) {
                 isBig = true;
                 radius = 0.2f;
-                textureRegion = new TextureRegion(actorAtlas.findRegion("Pill"), 8, 0, 8, 8);
+                textureRegion = new TextureRegion(actorAtlas.findRegion("Pill"), 16, 0, 16, 16);
             } else {
-                textureRegion = new TextureRegion(actorAtlas.findRegion("Pill"), 0, 0, 8, 8);
+                textureRegion = new TextureRegion(actorAtlas.findRegion("Pill"), 0, 0, 16, 16);
             }
 
             BodyDef bodyDef = new BodyDef();

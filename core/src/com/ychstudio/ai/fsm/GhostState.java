@@ -131,21 +131,21 @@ public enum GhostState implements State<GhostAgent> {
 
     };
 
-    private static boolean inPosition(GhostAgent entity) {
+    protected boolean inPosition(GhostAgent entity) {
         Body body = entity.ghostComponent.getBody();
         float x = body.getPosition().x;
         float y = body.getPosition().y;
 
-        float xLow = MathUtils.floor(x) + 0.4f;
-        float xHight = MathUtils.floor(x) + 0.6f;
+        float xLow = MathUtils.floor(x) + 0.45f;
+        float xHight = MathUtils.floor(x) + 0.55f;
 
-        float yLow = MathUtils.floor(y) + 0.4f;
-        float yHight = MathUtils.floor(y) + 0.6f;
+        float yLow = MathUtils.floor(y) + 0.45f;
+        float yHight = MathUtils.floor(y) + 0.55f;
 
         return xLow < x && x < xHight && yLow < y && y < yHight;
     }
 
-    private static void changeState(GhostAgent entity, int state) {
+    protected void changeState(GhostAgent entity, int state) {
         switch (state) {
             case 0: // UP
                 entity.stateMachine.changeState(MOVE_UP);
@@ -177,7 +177,7 @@ public enum GhostState implements State<GhostAgent> {
 
     private static final float radius = 0.55f;
 
-    private static boolean checkHitWall(GhostAgent entity, int state) {
+    protected boolean checkHitWall(GhostAgent entity, int state) {
         Body body = entity.ghostComponent.getBody();
         World world = body.getWorld();
         hitWall = false;
@@ -206,7 +206,7 @@ public enum GhostState implements State<GhostAgent> {
         return hitWall;
     }
 
-    private static Integer[] getDirectionChoices(GhostAgent entity, int state) {
+    protected Integer[] getDirectionChoices(GhostAgent entity, int state) {
         Body body = entity.ghostComponent.getBody();
         World world = body.getWorld();
 
@@ -253,7 +253,7 @@ public enum GhostState implements State<GhostAgent> {
         return result;
     }
 
-    private static RayCastCallback rayCastCallback = new RayCastCallback() {
+    protected RayCastCallback rayCastCallback = new RayCastCallback() {
         @Override
         public float reportRayFixture(Fixture fixture, Vector2 point, Vector2 normal, float fraction) {
             if (fixture.getFilterData().categoryBits == GameManager.WALL_BIT) {
@@ -264,7 +264,7 @@ public enum GhostState implements State<GhostAgent> {
         }
     };
 
-    private static int getRandomDirectionChoice(Integer[] choices) {
+    protected int getRandomDirectionChoice(Integer[] choices) {
         if (choices.length == 0) {
             return 0;
         }
