@@ -123,6 +123,8 @@ public enum PlayerState implements State<PlayerAgent> {
                     entity.playerComponent.getBody().setTransform(GameManager.instance.playerSpawnPos, 0);
                     entity.playerComponent.hp = 1;
                     entity.stateMachine.changeState(IDLE_RIGHT);
+                } else {
+                    GameManager.instance.makeGameOver();
                 }
             }
         }

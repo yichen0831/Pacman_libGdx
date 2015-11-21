@@ -31,6 +31,8 @@ public class GameManager implements Disposable {
 
     public int playerLives = 3;
 
+    private boolean gameOver = false;
+
     public Location<Vector2> playerLocation;
 
     private GameManager() {
@@ -49,6 +51,20 @@ public class GameManager implements Disposable {
 
     public void resetPlayerLives() {
         playerLives = 3;
+    }
+
+    public void makeGameOver() {
+        gameOver = true;
+    }
+
+    public boolean isGameOver() {
+        return gameOver;
+    }
+
+    public void resetGame() {
+        score = 0;
+        resetPlayerLives();
+        gameOver = false;
     }
 
     public void addScore(int score) {

@@ -53,11 +53,15 @@ public class PlayScreen implements Screen {
     private Label scoreLabel;
     private Label highScoreLabel;
 
+    private Label gameOverLabel;
+
     private StringBuilder stringBuilder;
 
     private World world;
     private Box2DDebugRenderer box2DDebugRenderer;
     private boolean showBox2DDebuggerRenderer;
+
+    private boolean changeScreen;
 
     public PlayScreen(PacMan game) {
         this.game = game;
@@ -84,7 +88,7 @@ public class PlayScreen implements Screen {
         world = new World(Vector2.Zero, true);
         world.setContactListener(new WorldContactListener());
         box2DDebugRenderer = new Box2DDebugRenderer();
-        showBox2DDebuggerRenderer = true;
+        showBox2DDebuggerRenderer = false;
 
         // load map
         tiledMap = new TmxMapLoader().load("map/map.tmx");
@@ -96,28 +100,41 @@ public class PlayScreen implements Screen {
         stage = new Stage(stageViewport, batch);
 
         font = new BitmapFont(Gdx.files.internal("fonts/army_stencil.fnt"));
-        Label scoreTextLabel = new Label("SCORE", new Label.LabelStyle(font, Color.WHITE));
+        Label.LabelStyle labelStyle = new Label.LabelStyle(font, Color.WHITE);
+
+        Label scoreTextLabel = new Label("SCORE", labelStyle);
         scoreTextLabel.setPosition(WIDTH * 1, HEIGHT * 19);
         stage.addActor(scoreTextLabel);
 
-        Label hightScoreTextLabel = new Label("High Score", new Label.LabelStyle(font, Color.WHITE));
+        Label hightScoreTextLabel = new Label("High Score", labelStyle);
         hightScoreTextLabel.setPosition(WIDTH * 14, HEIGHT * 19);
         stage.addActor(hightScoreTextLabel);
 
-        scoreLabel = new Label("0", new Label.LabelStyle(font, Color.WHITE));
+        scoreLabel = new Label("0", labelStyle);
         scoreLabel.setPosition(WIDTH * 1.5f, HEIGHT * 18.2f);
         stage.addActor(scoreLabel);
 
-        highScoreLabel = new Label("0", new Label.LabelStyle(font, Color.WHITE));
+        highScoreLabel = new Label("0", labelStyle);
         highScoreLabel.setPosition(WIDTH * 16.5f, HEIGHT * 18.2f);
         stage.addActor(highScoreLabel);
 
+        gameOverLabel = new Label("              - Game Over -\n Press Enter to continue", labelStyle);
+        gameOverLabel.setPosition(WIDTH * 4.3f, HEIGHT * 8f);
+        gameOverLabel.setVisible(false);
+        stage.addActor(gameOverLabel);
+
         stringBuilder = new StringBuilder();
+
+        changeScreen = false;
     }
 
     private void handleInput() {
         if (Gdx.input.isKeyJustPressed(Input.Keys.B)) {
             showBox2DDebuggerRenderer = !showBox2DDebuggerRenderer;
+        }
+
+        if (GameManager.instance.isGameOver() && Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
+            changeScreen = true;
         }
     }
 
@@ -145,7 +162,15 @@ public class PlayScreen implements Screen {
         scoreLabel.setText(stringBuilder.append(GameManager.instance.score).toString());
         stringBuilder.setLength(0);
         highScoreLabel.setText(stringBuilder.append(GameManager.instance.highScore).toString());
+        if (GameManager.instance.isGameOver()) {
+            gameOverLabel.setVisible(true);
+        }
         stage.draw();
+
+        if (changeScreen) {
+            GameManager.instance.resetGame();
+            game.setScreen(new PlayScreen(game));
+        }
     }
 
     @Override
@@ -169,6 +194,7 @@ public class PlayScreen implements Screen {
 
     @Override
     public void dispose() {
+        font.dispose();
         stage.dispose();
         tiledMap.dispose();
         tiledMapRenderer.dispose();
