@@ -167,6 +167,11 @@ public class PlayScreen implements Screen {
         }
         stage.draw();
 
+        if (GameManager.instance.totalPills <= 0) {
+            // TODO: maybe add sound or transition
+            changeScreen = true;
+        }
+
         if (changeScreen) {
             GameManager.instance.resetGame();
             game.setScreen(new PlayScreen(game));

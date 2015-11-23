@@ -254,9 +254,32 @@ public enum GhostState implements State<GhostAgent> {
         public void update(GhostAgent entity
         ) {
             entity.ghostComponent.currentState = GhostComponent.DIE;
-
             // respawn when getting back to the respawning postion
-            // TODO: return to respawning position
+            // update path every 0.2f
+            if (entity.nextNode == null || entity.timer > 0.2f) {
+                entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), GameManager.instance.ghostSpawnPos, GameManager.instance.aStarMap);
+                entity.timer = 0;
+            }
+
+            if (entity.nextNode == null || entity.getPosition().dst2(GameManager.instance.ghostSpawnPos) < 0.04f) {
+                // no path found or reach target
+                entity.ghostComponent.getBody().setTransform(GameManager.instance.ghostSpawnPos, 0);
+                entity.stateMachine.changeState(RESPAWN);
+                return;
+            }
+
+            float x = (entity.nextNode.x - MathUtils.floor(entity.getPosition().x)) * entity.speed;
+            float y = (entity.nextNode.y - MathUtils.floor(entity.getPosition().y)) * entity.speed;
+
+            Body body = entity.ghostComponent.getBody();
+
+            if (body.getLinearVelocity().isZero(0.1f) || inPosition(entity, 0.2f)) {
+                body.applyLinearImpulse(tmpV1.set(x, y).scl(body.getMass()), body.getWorldCenter(), true);
+            }
+
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed * 4) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed * 2 / body.getLinearVelocity().len()));
+            }
         }
 
     },
@@ -429,6 +452,7 @@ public enum GhostState implements State<GhostAgent> {
 
     @Override
     public void exit(GhostAgent entity) {
+        entity.nextNode = null;
     }
 
     @Override

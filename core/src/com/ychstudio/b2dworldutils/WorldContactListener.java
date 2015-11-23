@@ -48,9 +48,14 @@ public class WorldContactListener implements ContactListener {
                 PlayerComponent player = playerM.get((Entity) fixtureA.getBody().getUserData());
                 GhostComponent ghost = ghostM.get((Entity) fixtureB.getBody().getUserData());
 
+                if (ghost.currentState == GhostComponent.DIE) {
+                    return;
+                }
+
                 if (ghost.weaken) {
                     // kill ghost
                     ghost.hp--;
+                    GameManager.instance.addScore(800);
 
                 } else {
                     // kill player
@@ -61,9 +66,14 @@ public class WorldContactListener implements ContactListener {
                 PlayerComponent player = playerM.get((Entity) fixtureB.getBody().getUserData());
                 GhostComponent ghost = ghostM.get((Entity) fixtureA.getBody().getUserData());
 
+                if (ghost.currentState == GhostComponent.DIE) {
+                    return;
+                }
+
                 if (ghost.weaken) {
                     // kill ghost
                     ghost.hp--;
+                    GameManager.instance.addScore(800);
 
                 } else {
                     // kill player

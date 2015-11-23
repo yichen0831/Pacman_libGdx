@@ -58,6 +58,10 @@ public class PlayerSystem extends IteratingSystem {
                 body.applyLinearImpulse(tmpV1.set(0, -movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
 
             }
+
+            if (body.getLinearVelocity().len2() > movement.speed * movement.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(movement.speed / body.getLinearVelocity().len()));
+            }
         }
 
         player.playerAgent.update(deltaTime);
