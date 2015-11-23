@@ -239,7 +239,42 @@ public enum GhostState implements State<GhostAgent> {
             // get away from the player
             entity.ghostComponent.currentState = GhostComponent.ESCAPE;
 
-            // TODO: escape
+            // update path every 0.2f
+            if (entity.nextNode == null || entity.timer > 0.2f) {
+                float x = (GameManager.instance.playerLocation.getPosition().x + GameManager.instance.aStarMap.getWidth() / 2);
+                float y = (GameManager.instance.playerLocation.getPosition().y + GameManager.instance.aStarMap.getHeight() / 2);
+
+                do {
+                    x += 1;
+                    y += 1;
+                    x = x > GameManager.instance.aStarMap.getWidth() ? x - GameManager.instance.aStarMap.getWidth() : x;
+                    y = y > GameManager.instance.aStarMap.getHeight() ? y - GameManager.instance.aStarMap.getHeight() : y;
+                } while (GameManager.instance.aStarMap.getXY(MathUtils.floor(x), MathUtils.floor(y)) != 0);
+
+                tmpV1.set(x, y);
+                entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), tmpV1, GameManager.instance.aStarMap);
+                entity.timer = 0;
+            }
+
+            if (entity.nextNode == null || !nearPlayer(entity, PURSUE_RADIUS + 1)) {
+                // no path found or away from the player
+                changeState(entity, MathUtils.random(0, 3));
+                return;
+            }
+
+            float x = (entity.nextNode.x - MathUtils.floor(entity.getPosition().x)) * entity.speed;
+            float y = (entity.nextNode.y - MathUtils.floor(entity.getPosition().y)) * entity.speed;
+
+            Body body = entity.ghostComponent.getBody();
+
+            if (body.getLinearVelocity().isZero(0.1f) || inPosition(entity, 0.2f)) {
+                body.applyLinearImpulse(tmpV1.set(x, y).scl(body.getMass()), body.getWorldCenter(), true);
+            }
+
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
+            }
+
             if (!entity.ghostComponent.weaken) {
                 entity.stateMachine.changeState(PURSUE);
             }
