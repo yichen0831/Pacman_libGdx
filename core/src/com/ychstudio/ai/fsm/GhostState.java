@@ -33,7 +33,7 @@ public enum GhostState implements State<GhostAgent> {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_DOWN)));
             }
 
-            if (entity.timer > 0.5f && inPosition(entity)) {
+            if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_DOWN));
                 if (newState != entity.ghostComponent.currentState) {
@@ -74,7 +74,7 @@ public enum GhostState implements State<GhostAgent> {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP)));
             }
 
-            if (entity.timer > 0.5f && inPosition(entity)) {
+            if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP));
                 if (newState != entity.ghostComponent.currentState) {
@@ -114,7 +114,7 @@ public enum GhostState implements State<GhostAgent> {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_RIGHT)));
             }
 
-            if (entity.timer > 0.5f && inPosition(entity)) {
+            if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_RIGHT));
                 if (newState != entity.ghostComponent.currentState) {
@@ -155,7 +155,7 @@ public enum GhostState implements State<GhostAgent> {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_LEFT)));
             }
 
-            if (entity.timer > 0.5f && inPosition(entity)) {
+            if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
                 entity.timer = 0;
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_LEFT));
                 if (newState != entity.ghostComponent.currentState) {
@@ -188,8 +188,8 @@ public enum GhostState implements State<GhostAgent> {
                 return;
             }
 
-            // do path finding every 0.2 second
-            if (entity.nextNode == null || entity.timer > 0.2f) {
+            // do path finding every 0.1 second
+            if (entity.nextNode == null || entity.timer > 0.1f) {
                 entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), GameManager.instance.playerLocation.getPosition(), GameManager.instance.aStarMap);
                 entity.timer = 0;
             }
@@ -199,12 +199,14 @@ public enum GhostState implements State<GhostAgent> {
                 return;
             }
 
-            float x = entity.nextNode.x - MathUtils.floor(entity.getPosition().x);
-            float y = entity.nextNode.y - MathUtils.floor(entity.getPosition().y);
+            float x = (entity.nextNode.x - MathUtils.floor(entity.getPosition().x)) * entity.speed;
+            float y = (entity.nextNode.y - MathUtils.floor(entity.getPosition().y)) * entity.speed;
 
             Body body = entity.ghostComponent.getBody();
 
-            body.applyLinearImpulse(tmpV1.set(x, y).scl(body.getMass()), body.getWorldCenter(), true);
+            if (body.getLinearVelocity().isZero(0.1f) || inPosition(entity, 0.2f)) {
+                body.applyLinearImpulse(tmpV1.set(x, y).scl(body.getMass()), body.getWorldCenter(), true);
+            }
 
             if (x > 0) {
                 entity.ghostComponent.currentState = GhostComponent.MOVE_RIGHT;
@@ -220,7 +222,7 @@ public enum GhostState implements State<GhostAgent> {
                 body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
-            if (!nearPlayer(entity, PURSUE_RADIUS)) {
+            if (!nearPlayer(entity, PURSUE_RADIUS) && inPosition(entity, 0.2f)) {
                 changeState(entity, entity.ghostComponent.currentState);
             }
 
@@ -232,7 +234,8 @@ public enum GhostState implements State<GhostAgent> {
     },
     ESCAPE() {
         @Override
-        public void update(GhostAgent entity) {
+        public void update(GhostAgent entity
+        ) {
             // get away from the player
             entity.ghostComponent.currentState = GhostComponent.ESCAPE;
 
@@ -248,7 +251,8 @@ public enum GhostState implements State<GhostAgent> {
     },
     DIE() {
         @Override
-        public void update(GhostAgent entity) {
+        public void update(GhostAgent entity
+        ) {
             entity.ghostComponent.currentState = GhostComponent.DIE;
 
             // respawn when getting back to the respawning postion
@@ -258,7 +262,8 @@ public enum GhostState implements State<GhostAgent> {
     },
     RESPAWN() {
         @Override
-        public void update(GhostAgent entity) {
+        public void update(GhostAgent entity
+        ) {
             entity.ghostComponent.respawn();
             entity.stateMachine.changeState(MOVE_UP);
         }
@@ -274,15 +279,15 @@ public enum GhostState implements State<GhostAgent> {
         return pos.dst2(playerPos) < distance * distance;
     }
 
-    protected boolean inPosition(GhostAgent entity) {
+    protected boolean inPosition(GhostAgent entity, float radius) {
         float x = entity.getPosition().x;
         float y = entity.getPosition().y;
 
-        float xLow = MathUtils.floor(x) + 0.45f;
-        float xHight = MathUtils.floor(x) + 0.55f;
+        float xLow = MathUtils.floor(x) + 0.5f - radius;
+        float xHight = MathUtils.floor(x) + 0.5f + radius;
 
-        float yLow = MathUtils.floor(y) + 0.45f;
-        float yHight = MathUtils.floor(y) + 0.55f;
+        float yLow = MathUtils.floor(y) + 0.5f - radius;
+        float yHight = MathUtils.floor(y) + 0.5f + radius;
 
         return xLow < x && x < xHight && yLow < y && y < yHight;
     }
