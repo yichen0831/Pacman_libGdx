@@ -11,14 +11,18 @@ import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.RectangleMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.CircleShape;
+import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
+import com.ychstudio.ai.astar.AStarMap;
 import com.ychstudio.components.AnimationComponent;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
@@ -38,6 +42,8 @@ public class WorldBuilder {
     private final AssetManager assetManager;
     private final TextureAtlas actorAtlas;
 
+    private boolean wall;
+
     public WorldBuilder(TiledMap tiledMap, Engine engine, World world) {
         this.tiledMap = tiledMap;
         this.engine = engine;
@@ -53,6 +59,9 @@ public class WorldBuilder {
 
     private void buildMap() {
         MapLayers mapLayers = tiledMap.getLayers();
+
+        int mapWidth = ((TiledMapTileLayer) mapLayers.get(0)).getWidth();
+        int mapHeight = ((TiledMapTileLayer) mapLayers.get(0)).getHeight();
 
         // walls
         MapLayer wallLayer = mapLayers.get("Wall"); // wall layer
@@ -72,6 +81,51 @@ public class WorldBuilder {
             fixtureDef.shape = polygonShape;
             fixtureDef.filter.categoryBits = GameManager.WALL_BIT;
             fixtureDef.filter.maskBits = GameManager.PLAYER_BIT | GameManager.GHOST_BIT;
+            body.createFixture(fixtureDef);
+            polygonShape.dispose();
+        }
+
+        // create map for A* path finding
+        AStarMap aStarMap = new AStarMap(mapWidth, mapHeight);
+
+        QueryCallback queryCallback = new QueryCallback() {
+            @Override
+            public boolean reportFixture(Fixture fixture) {
+                wall = fixture.getFilterData().categoryBits == GameManager.WALL_BIT;
+                return false; // stop finding other fixtures in the query area
+            }
+        };
+
+        for (int y = 0; y < mapHeight; y++) {
+            for (int x = 0; x < mapWidth; x++) {
+                wall = false;
+                world.QueryAABB(queryCallback, x + 0.2f, y + 0.2f, x + 0.8f, y + 0.8f);
+                if (wall) {
+                    aStarMap.setXY(x, y, aStarMap.WALL);
+                }
+            }
+        }
+        GameManager.instance.aStarMap = aStarMap;
+
+        // Gate
+        MapLayer gateLayer = mapLayers.get("Gate"); // gate layer
+        for (MapObject mapObject : gateLayer.getObjects()) {
+            Rectangle rectangle = ((RectangleMapObject) mapObject).getRectangle();
+
+            correctRectangle(rectangle);
+
+            BodyDef bodyDef = new BodyDef();
+            bodyDef.type = BodyDef.BodyType.StaticBody;
+            bodyDef.position.set(rectangle.x + rectangle.width / 2, rectangle.y + rectangle.height / 2);
+
+            Body body = world.createBody(bodyDef);
+            PolygonShape polygonShape = new PolygonShape();
+            polygonShape.setAsBox(rectangle.width / 2, rectangle.height / 2);
+            FixtureDef fixtureDef = new FixtureDef();
+            fixtureDef.shape = polygonShape;
+            fixtureDef.filter.categoryBits = GameManager.GATE_BIT;
+            fixtureDef.filter.maskBits = GameManager.PLAYER_BIT | GameManager.GHOST_BIT;
+            fixtureDef.isSensor = true;
             body.createFixture(fixtureDef);
             polygonShape.dispose();
         }
@@ -333,6 +387,8 @@ public class WorldBuilder {
         }
         animation = new Animation(0.2f, keyFrames, Animation.PlayMode.LOOP);
         anim.animations.put(GhostComponent.ESCAPE, animation);
+
+        keyFrames.clear();
 
         // die
         for (int i = 4; i < 8; i++) {

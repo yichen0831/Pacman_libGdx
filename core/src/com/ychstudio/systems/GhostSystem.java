@@ -6,6 +6,7 @@ import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.StateComponent;
+import com.ychstudio.gamesys.GameManager;
 
 public class GhostSystem extends IteratingSystem {
 
@@ -17,13 +18,28 @@ public class GhostSystem extends IteratingSystem {
     }
 
     @Override
+    public void update(float deltaTime) {
+        super.update(deltaTime);
+        GameManager.instance.bigPillEaten = false;
+    }
+
+    @Override
     protected void processEntity(Entity entity, float deltaTime) {
         GhostComponent ghost = ghostM.get(entity);
         StateComponent state = stateM.get(entity);
 
         ghost.ghostAgent.update(deltaTime);
         state.setState(ghost.currentState);
-        
+
+        if (ghost.weaken && state.getStateTime() > GhostComponent.WEAK_TIME) {
+            ghost.weaken = false;
+        }
+
+        if (GameManager.instance.bigPillEaten) {
+            ghost.weaken = true;
+            state.resetStateTime();
+        }
+
     }
 
 }

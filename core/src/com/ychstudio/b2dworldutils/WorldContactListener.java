@@ -28,18 +28,22 @@ public class WorldContactListener implements ContactListener {
         Fixture fixtureB = contact.getFixtureB();
 
         if (fixtureA.getFilterData().categoryBits == GameManager.PILL_BIT || fixtureB.getFilterData().categoryBits == GameManager.PILL_BIT) {
+            // pill
             if (fixtureA.getFilterData().categoryBits == GameManager.PLAYER_BIT) {
                 Body body = fixtureB.getBody();
                 Entity entity = (Entity) body.getUserData();
                 PillComponent pill = pillM.get(entity);
                 pill.eaten = true;
+                GameManager.instance.bigPillEaten = pill.big;
             } else if (fixtureB.getFilterData().categoryBits == GameManager.PLAYER_BIT) {
                 Body body = fixtureA.getBody();
                 Entity entity = (Entity) body.getUserData();
                 PillComponent pill = pillM.get(entity);
                 pill.eaten = true;
+                GameManager.instance.bigPillEaten = pill.big;
             }
         } else if (fixtureA.getFilterData().categoryBits == GameManager.GHOST_BIT || fixtureB.getFilterData().categoryBits == GameManager.GHOST_BIT) {
+            // ghost
             if (fixtureA.getFilterData().categoryBits == GameManager.PLAYER_BIT) {
                 PlayerComponent player = playerM.get((Entity) fixtureA.getBody().getUserData());
                 GhostComponent ghost = ghostM.get((Entity) fixtureB.getBody().getUserData());

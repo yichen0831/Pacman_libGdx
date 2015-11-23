@@ -5,6 +5,7 @@ import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
+import com.ychstudio.ai.astar.AStarMap;
 
 public class GameManager implements Disposable {
 
@@ -31,7 +32,11 @@ public class GameManager implements Disposable {
 
     public int playerLives = 3;
 
+    public boolean bigPillEaten = false;
+    public boolean playerIsAlive = true;
     private boolean gameOver = false;
+
+    public AStarMap aStarMap;
 
     public Location<Vector2> playerLocation;
 
@@ -64,6 +69,8 @@ public class GameManager implements Disposable {
     public void resetGame() {
         score = 0;
         resetPlayerLives();
+        playerIsAlive = true;
+        bigPillEaten = false;
         gameOver = false;
     }
 

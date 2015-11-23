@@ -15,6 +15,8 @@ public class GhostComponent implements Component {
     public static final int ESCAPE = 4;
     public static final int DIE = 5;
 
+    public static final float WEAK_TIME = 6f;
+
     public GhostAgent ghostAgent;
 
     private final Body body;
@@ -35,5 +37,10 @@ public class GhostComponent implements Component {
 
     public Body getBody() {
         return body;
+    }
+
+    public void respawn() {
+        hp = 1;
+        weaken = false;
     }
 }

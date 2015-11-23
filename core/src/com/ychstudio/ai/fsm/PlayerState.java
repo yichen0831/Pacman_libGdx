@@ -115,6 +115,7 @@ public enum PlayerState implements State<PlayerAgent> {
         @Override
         public void update(PlayerAgent entity) {
             entity.playerComponent.currentState = PlayerComponent.DIE;
+            GameManager.instance.playerIsAlive = false;
 
             // re-spawn player
             if (entity.timer > 1.5f) {
@@ -123,6 +124,7 @@ public enum PlayerState implements State<PlayerAgent> {
                     entity.playerComponent.getBody().setTransform(GameManager.instance.playerSpawnPos, 0);
                     entity.playerComponent.hp = 1;
                     entity.stateMachine.changeState(IDLE_RIGHT);
+                    GameManager.instance.playerIsAlive = true;
                 } else {
                     GameManager.instance.makeGameOver();
                 }

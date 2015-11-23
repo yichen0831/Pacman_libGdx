@@ -8,6 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
+import com.ychstudio.ai.astar.AStartPathFinding;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.gamesys.GameManager;
 import java.util.ArrayList;
@@ -39,6 +40,21 @@ public enum GhostState implements State<GhostAgent> {
                     changeState(entity, newState);
                 }
             }
+
+            if (entity.ghostComponent.weaken) {
+                entity.ghostComponent.currentState = GhostComponent.ESCAPE;
+                if (entity.ghostComponent.hp <= 0) {
+                    entity.stateMachine.changeState(DIE);
+                }
+            }
+
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+                if (entity.ghostComponent.weaken) {
+                    entity.stateMachine.changeState(ESCAPE);
+                } else {
+                    entity.stateMachine.changeState(PURSUE);
+                }
+            }
         }
 
     },
@@ -63,6 +79,21 @@ public enum GhostState implements State<GhostAgent> {
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP));
                 if (newState != entity.ghostComponent.currentState) {
                     changeState(entity, newState);
+                }
+            }
+
+            if (entity.ghostComponent.weaken) {
+                entity.ghostComponent.currentState = GhostComponent.ESCAPE;
+                if (entity.ghostComponent.hp <= 0) {
+                    entity.stateMachine.changeState(DIE);
+                }
+            }
+
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+                if (entity.ghostComponent.weaken) {
+                    entity.stateMachine.changeState(ESCAPE);
+                } else {
+                    entity.stateMachine.changeState(PURSUE);
                 }
             }
         }
@@ -90,16 +121,32 @@ public enum GhostState implements State<GhostAgent> {
                     changeState(entity, newState);
                 }
             }
+
+            if (entity.ghostComponent.weaken) {
+                entity.ghostComponent.currentState = GhostComponent.ESCAPE;
+
+                if (entity.ghostComponent.hp <= 0) {
+                    entity.stateMachine.changeState(DIE);
+                }
+            }
+
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+                if (entity.ghostComponent.weaken) {
+                    entity.stateMachine.changeState(ESCAPE);
+                } else {
+                    entity.stateMachine.changeState(PURSUE);
+                }
+            }
         }
     },
     MOVE_RIGHT() {
         @Override
         public void update(GhostAgent entity) {
             entity.ghostComponent.currentState = GhostComponent.MOVE_RIGHT;
-            
+
             Body body = entity.ghostComponent.getBody();
             body.applyLinearImpulse(tmpV1.set(entity.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
-            
+
             if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
                 body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
@@ -115,26 +162,121 @@ public enum GhostState implements State<GhostAgent> {
                     changeState(entity, newState);
                 }
             }
+
+            if (entity.ghostComponent.weaken) {
+                entity.ghostComponent.currentState = GhostComponent.ESCAPE;
+                if (entity.ghostComponent.hp <= 0) {
+                    entity.stateMachine.changeState(DIE);
+                }
+            }
+
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+                if (entity.ghostComponent.weaken) {
+                    entity.stateMachine.changeState(ESCAPE);
+                } else {
+                    entity.stateMachine.changeState(PURSUE);
+                }
+            }
         }
+    },
+    PURSUE() {
+        @Override
+        public void update(GhostAgent entity) {
+            // run after the player
+            if (GameManager.instance.playerLocation == null || !GameManager.instance.playerIsAlive) {
+                changeState(entity, MathUtils.random(0, 3));
+                return;
+            }
+
+            // do path finding every 0.2 second
+            if (entity.nextNode == null || entity.timer > 0.2f) {
+                entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), GameManager.instance.playerLocation.getPosition(), GameManager.instance.aStarMap);
+                entity.timer = 0;
+            }
+            if (entity.nextNode == null) {
+                // no path found or player is dead
+                changeState(entity, MathUtils.random(0, 3));
+                return;
+            }
+
+            float x = entity.nextNode.x - MathUtils.floor(entity.getPosition().x);
+            float y = entity.nextNode.y - MathUtils.floor(entity.getPosition().y);
+
+            Body body = entity.ghostComponent.getBody();
+
+            body.applyLinearImpulse(tmpV1.set(x, y).scl(body.getMass()), body.getWorldCenter(), true);
+
+            if (x > 0) {
+                entity.ghostComponent.currentState = GhostComponent.MOVE_RIGHT;
+            } else if (x < 0) {
+                entity.ghostComponent.currentState = GhostComponent.MOVE_LEFT;
+            } else if (y > 0) {
+                entity.ghostComponent.currentState = GhostComponent.MOVE_UP;
+            } else if (y < 0) {
+                entity.ghostComponent.currentState = GhostComponent.MOVE_DOWN;
+            }
+
+            if (body.getLinearVelocity().len2() > entity.speed * entity.speed) {
+                body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
+            }
+
+            if (!nearPlayer(entity, PURSUE_RADIUS)) {
+                changeState(entity, entity.ghostComponent.currentState);
+            }
+
+            if (entity.ghostComponent.weaken) {
+                entity.stateMachine.changeState(ESCAPE);
+            }
+        }
+
     },
     ESCAPE() {
         @Override
         public void update(GhostAgent entity) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            // get away from the player
+            entity.ghostComponent.currentState = GhostComponent.ESCAPE;
+
+            // TODO: escape
+            if (!entity.ghostComponent.weaken) {
+                entity.stateMachine.changeState(PURSUE);
+            }
+
+            if (entity.ghostComponent.hp <= 0) {
+                entity.stateMachine.changeState(DIE);
+            }
         }
     },
     DIE() {
         @Override
         public void update(GhostAgent entity) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            entity.ghostComponent.currentState = GhostComponent.DIE;
+
+            // respawn when getting back to the respawning postion
+            // TODO: return to respawning position
         }
 
+    },
+    RESPAWN() {
+        @Override
+        public void update(GhostAgent entity) {
+            entity.ghostComponent.respawn();
+            entity.stateMachine.changeState(MOVE_UP);
+        }
     };
 
+    protected boolean nearPlayer(GhostAgent entity, float distance) {
+        if (GameManager.instance.playerLocation == null) {
+            return false;
+        }
+        Vector2 pos = entity.getPosition();
+        Vector2 playerPos = GameManager.instance.playerLocation.getPosition();
+
+        return pos.dst2(playerPos) < distance * distance;
+    }
+
     protected boolean inPosition(GhostAgent entity) {
-        Body body = entity.ghostComponent.getBody();
-        float x = body.getPosition().x;
-        float y = body.getPosition().y;
+        float x = entity.getPosition().x;
+        float y = entity.getPosition().y;
 
         float xLow = MathUtils.floor(x) + 0.45f;
         float xHight = MathUtils.floor(x) + 0.55f;
@@ -147,22 +289,22 @@ public enum GhostState implements State<GhostAgent> {
 
     protected void changeState(GhostAgent entity, int state) {
         switch (state) {
-            case 0: // UP
+            case GhostComponent.MOVE_UP: // UP
                 entity.stateMachine.changeState(MOVE_UP);
                 break;
-            case 1: // DOWN
+            case GhostComponent.MOVE_DOWN: // DOWN
                 entity.stateMachine.changeState(MOVE_DOWN);
                 break;
-            case 2: // LEFT
+            case GhostComponent.MOVE_LEFT: // LEFT
                 entity.stateMachine.changeState(MOVE_LEFT);
                 break;
-            case 3: // RIGHT
+            case GhostComponent.MOVE_RIGHT: // RIGHT
                 entity.stateMachine.changeState(MOVE_RIGHT);
                 break;
-            case 4: // ESCAPE
+            case GhostComponent.ESCAPE: // ESCAPE
                 entity.stateMachine.changeState(ESCAPE);
                 break;
-            case 5: // DIE
+            case GhostComponent.DIE: // DIE
                 entity.stateMachine.changeState(DIE);
                 break;
             default:
@@ -170,12 +312,14 @@ public enum GhostState implements State<GhostAgent> {
         }
     }
 
-    private static final Vector2 tmpV1 = new Vector2();
-    private static final Vector2 tmpV2 = new Vector2();
-    private static final List<Integer> choicesList = new ArrayList<>(4);
-    private static boolean hitWall = false;
+    protected static final Vector2 tmpV1 = new Vector2();
+    protected static final Vector2 tmpV2 = new Vector2();
+    protected static final List<Integer> choicesList = new ArrayList<>(4);
+    protected static boolean hitWall = false;
 
-    private static final float radius = 0.55f;
+    protected static final float RADIUS = 0.55f;
+
+    protected static final float PURSUE_RADIUS = 5f;
 
     protected boolean checkHitWall(GhostAgent entity, int state) {
         Body body = entity.ghostComponent.getBody();
@@ -185,17 +329,17 @@ public enum GhostState implements State<GhostAgent> {
         tmpV1.set(body.getWorldCenter());
 
         switch (state) {
-            case 0: // UP
-                tmpV2.set(tmpV1).add(0, radius);
+            case GhostComponent.MOVE_UP:
+                tmpV2.set(tmpV1).add(0, RADIUS);
                 break;
-            case 1: // DOWN
-                tmpV2.set(tmpV1).add(0, -radius);
+            case GhostComponent.MOVE_DOWN:
+                tmpV2.set(tmpV1).add(0, -RADIUS);
                 break;
-            case 2: // LEFT
-                tmpV2.set(tmpV1).add(-radius, 0);
+            case GhostComponent.MOVE_LEFT:
+                tmpV2.set(tmpV1).add(-RADIUS, 0);
                 break;
-            case 3: // RIGHT
-                tmpV2.set(tmpV1).add(radius, 0);
+            case GhostComponent.MOVE_RIGHT:
+                tmpV2.set(tmpV1).add(RADIUS, 0);
                 break;
             default:
                 tmpV2.setZero();
@@ -225,17 +369,17 @@ public enum GhostState implements State<GhostAgent> {
 
             hitWall = false;
             switch (integer) {
-                case 0: // UP
-                    tmpV2.set(tmpV1).add(0, radius);
+                case GhostComponent.MOVE_UP: // UP
+                    tmpV2.set(tmpV1).add(0, RADIUS);
                     break;
-                case 1: // DOWN
-                    tmpV2.set(tmpV1).add(0, -radius);
+                case GhostComponent.MOVE_DOWN: // DOWN
+                    tmpV2.set(tmpV1).add(0, -RADIUS);
                     break;
-                case 2: // LEFT
-                    tmpV2.set(tmpV1).add(-radius, 0);
+                case GhostComponent.MOVE_LEFT: // LEFT
+                    tmpV2.set(tmpV1).add(-RADIUS, 0);
                     break;
-                case 3: // RIGHT
-                    tmpV2.set(tmpV1).add(radius, 0);
+                case GhostComponent.MOVE_RIGHT: // RIGHT
+                    tmpV2.set(tmpV1).add(RADIUS, 0);
                     break;
                 default:
                     tmpV2.setZero();

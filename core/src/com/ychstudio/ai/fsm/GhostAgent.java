@@ -4,10 +4,9 @@ import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.ai.fsm.StateMachine;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.ai.msg.Telegraph;
-import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.math.Vector2;
+import com.ychstudio.ai.astar.Node;
 import com.ychstudio.components.GhostComponent;
-import com.ychstudio.gamesys.GameManager;
 
 public class GhostAgent implements Telegraph {
 
@@ -17,22 +16,24 @@ public class GhostAgent implements Telegraph {
 
     public float speed = 2.4f;
 
-    private Location<Vector2> target;
-    
     public float timer;
+
+    public Node nextNode; // for pursue or escape
 
     public GhostAgent(GhostComponent ghostComponent) {
         this.ghostComponent = ghostComponent;
         stateMachine = new DefaultStateMachine<>(this);
-        
-        target = GameManager.instance.playerLocation;
-        
+
         timer = 0;
+    }
+
+    public Vector2 getPosition() {
+        return ghostComponent.getBody().getPosition();
     }
 
     public void update(float deltaTime) {
         timer += deltaTime;
-        
+
         stateMachine.update();
     }
 
