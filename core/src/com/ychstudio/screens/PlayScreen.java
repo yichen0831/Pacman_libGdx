@@ -133,7 +133,7 @@ public class PlayScreen implements Screen {
         stage.addActor(highScoreLabel);
 
         gameOverLabel = new Label("              - Game Over -\n Press Enter to continue", labelStyle);
-        gameOverLabel.setPosition(WIDTH * 4.3f, HEIGHT * 8f);
+        gameOverLabel.setPosition(WIDTH * 4.3f, HEIGHT * 9f);
         gameOverLabel.setVisible(false);
         stage.addActor(gameOverLabel);
 

@@ -240,8 +240,11 @@ public enum GhostState implements State<GhostAgent> {
                 return;
             }
 
-            if (entity.ghostComponent.weaken && inPosition(entity, 0.1f)) {
-                entity.stateMachine.changeState(ESCAPE);
+            if (entity.ghostComponent.weaken) {
+                entity.ghostComponent.currentState = GhostComponent.ESCAPE;
+                if (inPosition(entity, 0.1f)) {
+                    entity.stateMachine.changeState(ESCAPE);
+                }
             }
         }
 
@@ -497,6 +500,9 @@ public enum GhostState implements State<GhostAgent> {
     @Override
     public void enter(GhostAgent entity) {
         entity.ghostComponent.getBody().setLinearVelocity(0, 0);
+        if (!inPosition(entity, 0.1f)) {
+            entity.ghostComponent.getBody().setTransform(tmpV1.set(MathUtils.floor(entity.getPosition().x) + 0.5f, MathUtils.floor(entity.getPosition().y) + 0.5f), 0);
+        }
         entity.timer = 0;
     }
 
