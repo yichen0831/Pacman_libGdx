@@ -20,6 +20,7 @@ public class GameManager implements Disposable {
     public static final short PILL_BIT = 1 << 2;
     public static final short GHOST_BIT = 1 << 3;
     public static final short GATE_BIT = 1 << 4;
+    public static final short LIGHT_BIT = 1 << 5;
 
     public AssetManager assetManager;
 

@@ -1,5 +1,6 @@
 package com.ychstudio.screens;
 
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -66,6 +67,8 @@ public class PlayScreen implements Screen {
 
     private Sprite pacmanSprite;
 
+    private RayHandler rayHandler;
+
     private boolean changeScreen;
 
     public PlayScreen(PacMan game) {
@@ -90,16 +93,21 @@ public class PlayScreen implements Screen {
         engine.addSystem(new AnimationSystem());
         engine.addSystem(new RenderSystem(batch));
 
+        // box2d
         world = new World(Vector2.Zero, true);
         world.setContactListener(new WorldContactListener());
         box2DDebugRenderer = new Box2DDebugRenderer();
         showBox2DDebuggerRenderer = false;
 
+        // box2d light
+        rayHandler = new RayHandler(world);
+        rayHandler.setAmbientLight(0.5f);
+
         // load map
         tiledMap = new TmxMapLoader().load("map/map.tmx");
         tiledMapRenderer = new OrthogonalTiledMapRenderer(tiledMap, 1 / 16f, batch);
 
-        new WorldBuilder(tiledMap, engine, world).buildAll();
+        new WorldBuilder(tiledMap, engine, world, rayHandler).buildAll();
 
         stageViewport = new FitViewport(WIDTH * 20, HEIGHT * 20);
         stage = new Stage(stageViewport, batch);
@@ -162,6 +170,9 @@ public class PlayScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         engine.update(delta);
 
+        rayHandler.setCombinedMatrix(camera);
+        rayHandler.updateAndRender();
+
         batch.begin();
         for (int i = 0; i < GameManager.instance.playerLives; i++) {
             pacmanSprite.setPosition(8 + i, 21.5f);
@@ -217,6 +228,7 @@ public class PlayScreen implements Screen {
     public void dispose() {
         font.dispose();
         stage.dispose();
+        rayHandler.dispose();
         tiledMap.dispose();
         tiledMapRenderer.dispose();
         world.dispose();

@@ -1,8 +1,11 @@
 package com.ychstudio.builders;
 
+import box2dLight.PointLight;
+import box2dLight.RayHandler;
 import com.badlogic.ashley.core.Engine;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -37,6 +40,7 @@ public class WorldBuilder {
 
     private final TiledMap tiledMap;
     private final World world;
+    private final RayHandler rayHandler;
     private final Engine engine;
 
     private final AssetManager assetManager;
@@ -44,10 +48,11 @@ public class WorldBuilder {
 
     private boolean wall;
 
-    public WorldBuilder(TiledMap tiledMap, Engine engine, World world) {
+    public WorldBuilder(TiledMap tiledMap, Engine engine, World world, RayHandler rayHandler) {
         this.tiledMap = tiledMap;
         this.engine = engine;
         this.world = world;
+        this.rayHandler = rayHandler;
 
         assetManager = GameManager.instance.assetManager;
         actorAtlas = assetManager.get("images/actors.pack", TextureAtlas.class);
@@ -80,7 +85,7 @@ public class WorldBuilder {
             FixtureDef fixtureDef = new FixtureDef();
             fixtureDef.shape = polygonShape;
             fixtureDef.filter.categoryBits = GameManager.WALL_BIT;
-            fixtureDef.filter.maskBits = GameManager.PLAYER_BIT | GameManager.GHOST_BIT;
+            fixtureDef.filter.maskBits = GameManager.PLAYER_BIT | GameManager.GHOST_BIT | GameManager.LIGHT_BIT;
             body.createFixture(fixtureDef);
             polygonShape.dispose();
         }
@@ -229,6 +234,13 @@ public class WorldBuilder {
         body.createFixture(fixtureDef);
         circleShape.dispose();
 
+        // box2d light
+        PointLight pointLight = new PointLight(rayHandler, 50, new Color(0.5f, 0.5f, 0.5f, 1.0f), 12f, 0, 0);
+        pointLight.setContactFilter(GameManager.LIGHT_BIT, GameManager.NOTHING_BIT, GameManager.WALL_BIT);
+        pointLight.setSoft(true);
+        pointLight.setSoftnessLength(2.0f);
+        pointLight.attachToBody(body);
+
         TextureRegion textureRegion = new TextureRegion(actorAtlas.findRegion("Pacman"), 0, 0, 16, 16);
 
         PlayerComponent player = new PlayerComponent(body);
@@ -337,6 +349,13 @@ public class WorldBuilder {
         fixtureDef.filter.maskBits = GameManager.WALL_BIT | GameManager.GATE_BIT;
         fixtureDef.isSensor = false;
         body.createFixture(fixtureDef);
+
+        // box2d light
+        PointLight pointLight = new PointLight(rayHandler, 50, new Color(0.2f, 0.2f, 0.2f, 1.0f), 12f, 0, 0);
+        pointLight.setContactFilter(GameManager.LIGHT_BIT, GameManager.NOTHING_BIT, GameManager.WALL_BIT);
+        pointLight.setSoft(true);
+        pointLight.setSoftnessLength(2.0f);
+        pointLight.attachToBody(body);
 
         circleShape.dispose();
 
