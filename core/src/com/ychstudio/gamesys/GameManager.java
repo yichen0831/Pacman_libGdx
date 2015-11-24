@@ -49,6 +49,7 @@ public class GameManager implements Disposable {
         assetManager.load("sounds/big_pill.ogg", Sound.class);
         assetManager.load("sounds/ghost_die.ogg", Sound.class);
         assetManager.load("sounds/pacman_die.ogg", Sound.class);
+        assetManager.load("sounds/clear.ogg", Sound.class);
 
         assetManager.finishLoading();
 
@@ -77,6 +78,7 @@ public class GameManager implements Disposable {
             score = 0;
             resetPlayerLives();
         }
+        totalPills = 0;
         playerIsAlive = true;
         bigPillEaten = false;
         gameOver = false;

@@ -5,6 +5,7 @@ import com.badlogic.ashley.core.Engine;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -195,7 +196,7 @@ public class PlayScreen implements Screen {
         stage.draw();
 
         if (GameManager.instance.totalPills <= 0) {
-            // TODO: maybe add sound or transition
+            GameManager.instance.assetManager.get("sounds/clear.ogg", Sound.class).play();
             changeScreen = true;
         }
 
