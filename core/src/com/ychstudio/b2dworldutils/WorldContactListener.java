@@ -2,6 +2,7 @@ package com.ychstudio.b2dworldutils;
 
 import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
@@ -56,10 +57,13 @@ public class WorldContactListener implements ContactListener {
                     // kill ghost
                     ghost.hp--;
                     GameManager.instance.addScore(800);
-
+                    GameManager.instance.assetManager.get("sounds/ghost_die.ogg", Sound.class).play();
                 } else {
                     // kill player
                     player.hp--;
+                    if (GameManager.instance.playerIsAlive) {
+                        GameManager.instance.assetManager.get("sounds/pacman_die.ogg", Sound.class).play();
+                    }
                 }
 
             } else if (fixtureB.getFilterData().categoryBits == GameManager.PLAYER_BIT) {
@@ -74,10 +78,13 @@ public class WorldContactListener implements ContactListener {
                     // kill ghost
                     ghost.hp--;
                     GameManager.instance.addScore(800);
-
+                    GameManager.instance.assetManager.get("sounds/ghost_die.ogg", Sound.class).play();
                 } else {
                     // kill player
                     player.hp--;
+                    if (GameManager.instance.playerIsAlive) {
+                        GameManager.instance.assetManager.get("sounds/pacman_die.ogg", Sound.class).play();
+                    }
                 }
 
             }

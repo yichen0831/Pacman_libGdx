@@ -4,6 +4,7 @@ import com.badlogic.ashley.core.ComponentMapper;
 import com.badlogic.ashley.core.Entity;
 import com.badlogic.ashley.core.Family;
 import com.badlogic.ashley.systems.IteratingSystem;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.ychstudio.components.MovementComponent;
 import com.ychstudio.components.PillComponent;
@@ -28,8 +29,10 @@ public class PillSystem extends IteratingSystem {
         if (pill.eaten) {
             if (pill.big) {
                 GameManager.instance.addScore(500);
+                GameManager.instance.assetManager.get("sounds/big_pill.ogg", Sound.class).play();
             } else {
                 GameManager.instance.addScore(100);
+                GameManager.instance.assetManager.get("sounds/pill.ogg", Sound.class).play();
             }
 
             body.getWorld().destroyBody(body);

@@ -2,6 +2,7 @@ package com.ychstudio.gamesys;
 
 import com.badlogic.gdx.ai.utils.Location;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
@@ -43,6 +44,10 @@ public class GameManager implements Disposable {
     private GameManager() {
         assetManager = new AssetManager();
         assetManager.load("images/actors.pack", TextureAtlas.class);
+        assetManager.load("sounds/pill.ogg", Sound.class);
+        assetManager.load("sounds/big_pill.ogg", Sound.class);
+        assetManager.load("sounds/ghost_die.ogg", Sound.class);
+        assetManager.load("sounds/pacman_die.ogg", Sound.class);
 
         assetManager.finishLoading();
 
