@@ -31,8 +31,16 @@ public class GhostSystem extends IteratingSystem {
         ghost.ghostAgent.update(deltaTime);
         state.setState(ghost.currentState);
 
-        if (ghost.weaken && state.getStateTime() > GhostComponent.WEAK_TIME) {
-            ghost.weaken = false;
+        if (GameManager.instance.bigPillEaten) {
+            ghost.weak_time = 0;
+        }
+
+        if (ghost.weaken) {
+            ghost.weak_time += deltaTime;
+            if (ghost.weak_time >= GhostComponent.WEAK_TIME) {
+                ghost.weaken = false;
+                ghost.weak_time = 0;
+            }
         }
 
         if (GameManager.instance.bigPillEaten) {

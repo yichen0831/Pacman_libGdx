@@ -31,6 +31,7 @@ public enum GhostState implements State<GhostAgent> {
 
             if (checkHitWall(entity, GhostComponent.MOVE_UP)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_DOWN)));
+                return;
             }
 
             if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
@@ -38,17 +39,19 @@ public enum GhostState implements State<GhostAgent> {
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_DOWN));
                 if (newState != entity.ghostComponent.currentState) {
                     changeState(entity, newState);
+                    return;
                 }
             }
 
             if (entity.ghostComponent.weaken) {
                 entity.ghostComponent.currentState = GhostComponent.ESCAPE;
-                if (entity.ghostComponent.hp <= 0) {
+                if (entity.ghostComponent.hp <= 0 && inPosition(entity, 0.1f)) {
                     entity.stateMachine.changeState(DIE);
+                    return;
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -72,6 +75,7 @@ public enum GhostState implements State<GhostAgent> {
 
             if (checkHitWall(entity, GhostComponent.MOVE_DOWN)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP)));
+                return;
             }
 
             if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
@@ -79,17 +83,19 @@ public enum GhostState implements State<GhostAgent> {
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_UP));
                 if (newState != entity.ghostComponent.currentState) {
                     changeState(entity, newState);
+                    return;
                 }
             }
 
             if (entity.ghostComponent.weaken) {
                 entity.ghostComponent.currentState = GhostComponent.ESCAPE;
-                if (entity.ghostComponent.hp <= 0) {
+                if (entity.ghostComponent.hp <= 0 && inPosition(entity, 0.1f)) {
                     entity.stateMachine.changeState(DIE);
+                    return;
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -112,6 +118,7 @@ public enum GhostState implements State<GhostAgent> {
 
             if (checkHitWall(entity, GhostComponent.MOVE_LEFT)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_RIGHT)));
+                return;
             }
 
             if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
@@ -119,18 +126,20 @@ public enum GhostState implements State<GhostAgent> {
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_RIGHT));
                 if (newState != entity.ghostComponent.currentState) {
                     changeState(entity, newState);
+                    return;
                 }
             }
 
             if (entity.ghostComponent.weaken) {
                 entity.ghostComponent.currentState = GhostComponent.ESCAPE;
 
-                if (entity.ghostComponent.hp <= 0) {
+                if (entity.ghostComponent.hp <= 0 && inPosition(entity, 0.1f)) {
                     entity.stateMachine.changeState(DIE);
+                    return;
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -153,6 +162,7 @@ public enum GhostState implements State<GhostAgent> {
 
             if (checkHitWall(entity, GhostComponent.MOVE_RIGHT)) {
                 changeState(entity, getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_LEFT)));
+                return;
             }
 
             if (entity.timer > 0.5f && inPosition(entity, 0.05f)) {
@@ -160,17 +170,20 @@ public enum GhostState implements State<GhostAgent> {
                 int newState = getRandomDirectionChoice(getDirectionChoices(entity, GhostComponent.MOVE_LEFT));
                 if (newState != entity.ghostComponent.currentState) {
                     changeState(entity, newState);
+                    return;
                 }
             }
 
             if (entity.ghostComponent.weaken) {
                 entity.ghostComponent.currentState = GhostComponent.ESCAPE;
-                if (entity.ghostComponent.hp <= 0) {
+
+                if (entity.ghostComponent.hp <= 0 && inPosition(entity, 0.1f)) {
                     entity.stateMachine.changeState(DIE);
+                    return;
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -222,11 +235,12 @@ public enum GhostState implements State<GhostAgent> {
                 body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
-            if (!nearPlayer(entity, PURSUE_RADIUS) && inPosition(entity, 0.2f)) {
+            if (!nearPlayer(entity, PURSUE_RADIUS) && inPosition(entity, 0.1f)) {
                 changeState(entity, entity.ghostComponent.currentState);
+                return;
             }
 
-            if (entity.ghostComponent.weaken) {
+            if (entity.ghostComponent.weaken && inPosition(entity, 0.1f)) {
                 entity.stateMachine.changeState(ESCAPE);
             }
         }
@@ -267,7 +281,7 @@ public enum GhostState implements State<GhostAgent> {
 
             Body body = entity.ghostComponent.getBody();
 
-            if (body.getLinearVelocity().isZero(0.1f) || inPosition(entity, 0.2f)) {
+            if (body.getLinearVelocity().isZero(0.1f) || inPosition(entity, 0.1f)) {
                 body.applyLinearImpulse(tmpV1.set(x, y).scl(body.getMass()), body.getWorldCenter(), true);
             }
 
@@ -275,11 +289,12 @@ public enum GhostState implements State<GhostAgent> {
                 body.setLinearVelocity(body.getLinearVelocity().scl(entity.speed / body.getLinearVelocity().len()));
             }
 
-            if (!entity.ghostComponent.weaken) {
+            if (!entity.ghostComponent.weaken && inPosition(entity, 0.1f)) {
                 entity.stateMachine.changeState(PURSUE);
+                return;
             }
 
-            if (entity.ghostComponent.hp <= 0) {
+            if (entity.ghostComponent.hp <= 0 && inPosition(entity, 0.1f)) {
                 entity.stateMachine.changeState(DIE);
             }
         }

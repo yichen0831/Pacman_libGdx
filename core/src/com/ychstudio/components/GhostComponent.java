@@ -16,6 +16,7 @@ public class GhostComponent implements Component {
     public static final int DIE = 5;
 
     public static final float WEAK_TIME = 10f;
+    public float weak_time;
 
     public GhostAgent ghostAgent;
 
