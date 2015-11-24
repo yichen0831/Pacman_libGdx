@@ -8,7 +8,10 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
@@ -60,6 +63,8 @@ public class PlayScreen implements Screen {
     private World world;
     private Box2DDebugRenderer box2DDebugRenderer;
     private boolean showBox2DDebuggerRenderer;
+
+    private Sprite pacmanSprite;
 
     private boolean changeScreen;
 
@@ -123,6 +128,10 @@ public class PlayScreen implements Screen {
         gameOverLabel.setVisible(false);
         stage.addActor(gameOverLabel);
 
+        TextureAtlas textureAtlas = GameManager.instance.assetManager.get("images/actors.pack", TextureAtlas.class);
+        pacmanSprite = new Sprite(new TextureRegion(textureAtlas.findRegion("Pacman"), 16, 0, 16, 16));
+        pacmanSprite.setBounds(8f, 21.5f, 16 / GameManager.PPM, 16 / GameManager.PPM);
+
         stringBuilder = new StringBuilder();
 
         changeScreen = false;
@@ -153,6 +162,13 @@ public class PlayScreen implements Screen {
         batch.setProjectionMatrix(camera.combined);
         engine.update(delta);
 
+        batch.begin();
+        for (int i = 0; i < GameManager.instance.playerLives; i++) {
+            pacmanSprite.setPosition(8 + i, 21.5f);
+            pacmanSprite.draw(batch);
+        }
+        batch.end();
+
         if (showBox2DDebuggerRenderer) {
             box2DDebugRenderer.render(world, camera.combined);
         }
@@ -173,7 +189,7 @@ public class PlayScreen implements Screen {
         }
 
         if (changeScreen) {
-            GameManager.instance.resetGame();
+            GameManager.instance.resetGame(GameManager.instance.playerLives <= 0);
             game.setScreen(new PlayScreen(game));
         }
     }

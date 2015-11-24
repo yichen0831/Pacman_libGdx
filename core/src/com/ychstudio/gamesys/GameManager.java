@@ -66,9 +66,11 @@ public class GameManager implements Disposable {
         return gameOver;
     }
 
-    public void resetGame() {
-        score = 0;
-        resetPlayerLives();
+    public void resetGame(boolean restart) {
+        if (restart) {
+            score = 0;
+            resetPlayerLives();
+        }
         playerIsAlive = true;
         bigPillEaten = false;
         gameOver = false;
