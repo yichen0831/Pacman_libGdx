@@ -32,6 +32,9 @@ public class GameManager implements Disposable {
     public int highScore = 0;
     public int score = 0;
 
+    public int displayScore = 0;
+    public int displayHighScore = 0;
+
     public int playerLives = 3;
 
     public boolean bigPillEaten = false;
@@ -76,6 +79,7 @@ public class GameManager implements Disposable {
     public void resetGame(boolean restart) {
         if (restart) {
             score = 0;
+            displayScore = 0;
             resetPlayerLives();
         }
         totalPills = 0;

@@ -187,9 +187,15 @@ public class PlayScreen implements Screen {
 
         // update score
         stringBuilder.setLength(0);
-        scoreLabel.setText(stringBuilder.append(GameManager.instance.score).toString());
+        if (GameManager.instance.displayScore < GameManager.instance.score) {
+            GameManager.instance.displayScore = Math.min(GameManager.instance.score, GameManager.instance.displayScore + (int) (600 * delta));
+        }
+        scoreLabel.setText(stringBuilder.append(GameManager.instance.displayScore).toString());
         stringBuilder.setLength(0);
-        highScoreLabel.setText(stringBuilder.append(GameManager.instance.highScore).toString());
+        if (GameManager.instance.displayHighScore < GameManager.instance.highScore) {
+            GameManager.instance.displayHighScore = Math.min(GameManager.instance.highScore, GameManager.instance.displayHighScore + (int) (600 * delta));
+        }
+        highScoreLabel.setText(stringBuilder.append(GameManager.instance.displayHighScore).toString());
         if (GameManager.instance.isGameOver()) {
             gameOverLabel.setVisible(true);
         }
