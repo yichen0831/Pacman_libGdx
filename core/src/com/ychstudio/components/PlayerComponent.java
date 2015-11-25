@@ -29,6 +29,8 @@ public class PlayerComponent implements Component {
 
     public int hp;
 
+    public float invincibleTimer;
+
     public PlayerComponent(Body body) {
         this.body = body;
         ai = new PlayerAI(body);
@@ -36,6 +38,7 @@ public class PlayerComponent implements Component {
         playerAgent.stateMachine.setInitialState(PlayerState.IDLE_RIGHT);
         currentState = IDLE_RIGHT;
         hp = 1;
+        invincibleTimer = 0;
     }
 
     public Body getBody() {

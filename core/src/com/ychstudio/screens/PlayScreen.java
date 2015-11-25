@@ -201,7 +201,7 @@ public class PlayScreen implements Screen {
         rayHandler.updateAndRender();
 
         batch.begin();
-        for (int i = 0; i < GameManager.instance.playerLives; i++) {
+        for (int i = 0; i < GameManager.instance.playerLives - 1; i++) {
             pacmanSprite.setPosition(8 + i, 21.5f);
             pacmanSprite.draw(batch);
         }
@@ -222,8 +222,10 @@ public class PlayScreen implements Screen {
             GameManager.instance.displayHighScore = Math.min(GameManager.instance.highScore, GameManager.instance.displayHighScore + (int) (600 * delta));
         }
         highScoreLabel.setText(stringBuilder.append(GameManager.instance.displayHighScore).toString());
-        if (GameManager.instance.isGameOver()) {
+        if (GameManager.instance.isGameOver() && !changeScreen) {
             gameOverLabel.setVisible(true);
+        } else {
+            gameOverLabel.setVisible(false);
         }
         stage.draw();
 
@@ -234,7 +236,6 @@ public class PlayScreen implements Screen {
 
         if (changeScreen) {
             changeScreenCountDown -= delta;
-
             if (changeScreenCountDown <= 1) {
                 // fade out effect
                 ambientLight -= delta;

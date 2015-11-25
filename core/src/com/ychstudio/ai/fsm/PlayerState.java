@@ -125,6 +125,7 @@ public enum PlayerState implements State<PlayerAgent> {
                     entity.playerComponent.hp = 1;
                     entity.stateMachine.changeState(IDLE_RIGHT);
                     GameManager.instance.playerIsAlive = true;
+                    GameManager.instance.playerIsInvincible = true;
                 } else {
                     GameManager.instance.makeGameOver();
                 }

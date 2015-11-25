@@ -35,7 +35,8 @@ public class GameManager implements Disposable {
     public int displayScore = 0;
     public int displayHighScore = 0;
 
-    public int playerLives = 3;
+    public int playerLives = 4;
+    public boolean playerIsInvincible = true;
 
     public boolean bigPillEaten = false;
     public boolean playerIsAlive = true;

@@ -64,6 +64,15 @@ public class PlayerSystem extends IteratingSystem {
             }
         }
 
+        // player is invincible for 3.0f when spawning
+        if (GameManager.instance.playerIsInvincible) {
+            player.invincibleTimer += deltaTime;
+            if (player.invincibleTimer >= 3.0f) {
+                GameManager.instance.playerIsInvincible = false;
+                player.invincibleTimer = 0;
+            }
+        }
+
         player.playerAgent.update(deltaTime);
         state.setState(player.currentState);
     }

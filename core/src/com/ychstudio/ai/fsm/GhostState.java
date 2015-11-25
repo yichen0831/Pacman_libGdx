@@ -51,7 +51,7 @@ public enum GhostState implements State<GhostAgent> {
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && (GameManager.instance.playerIsAlive && !GameManager.instance.playerIsInvincible) && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -95,7 +95,7 @@ public enum GhostState implements State<GhostAgent> {
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && (GameManager.instance.playerIsAlive && !GameManager.instance.playerIsInvincible) && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -139,7 +139,7 @@ public enum GhostState implements State<GhostAgent> {
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && (GameManager.instance.playerIsAlive && !GameManager.instance.playerIsInvincible) && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -183,7 +183,7 @@ public enum GhostState implements State<GhostAgent> {
                 }
             }
 
-            if (nearPlayer(entity, PURSUE_RADIUS) && GameManager.instance.playerIsAlive && inPosition(entity, 0.1f)) {
+            if (nearPlayer(entity, PURSUE_RADIUS) && (GameManager.instance.playerIsAlive && !GameManager.instance.playerIsInvincible) && inPosition(entity, 0.1f)) {
                 if (entity.ghostComponent.weaken) {
                     entity.stateMachine.changeState(ESCAPE);
                 } else {
@@ -196,7 +196,7 @@ public enum GhostState implements State<GhostAgent> {
         @Override
         public void update(GhostAgent entity) {
             // run after the player
-            if (GameManager.instance.playerLocation == null || !GameManager.instance.playerIsAlive) {
+            if (GameManager.instance.playerLocation == null || !(GameManager.instance.playerIsAlive && !GameManager.instance.playerIsInvincible)) {
                 changeState(entity, MathUtils.random(0, 3));
                 return;
             }

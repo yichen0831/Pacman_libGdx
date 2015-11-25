@@ -58,11 +58,14 @@ public class WorldContactListener implements ContactListener {
                     ghost.hp--;
                     GameManager.instance.addScore(800);
                     GameManager.instance.assetManager.get("sounds/ghost_die.ogg", Sound.class).play();
-                } else {
-                    // kill player
-                    player.hp--;
-                    if (GameManager.instance.playerIsAlive) {
-                        GameManager.instance.assetManager.get("sounds/pacman_die.ogg", Sound.class).play();
+                } else // kill player if player is not invincible
+                {
+                    if (!GameManager.instance.playerIsInvincible) {
+                        player.hp--;
+
+                        if (GameManager.instance.playerIsAlive) {
+                            GameManager.instance.assetManager.get("sounds/pacman_die.ogg", Sound.class).play();
+                        }
                     }
                 }
 
@@ -79,14 +82,14 @@ public class WorldContactListener implements ContactListener {
                     ghost.hp--;
                     GameManager.instance.addScore(800);
                     GameManager.instance.assetManager.get("sounds/ghost_die.ogg", Sound.class).play();
-                } else {
-                    // kill player
-                    player.hp--;
-                    if (GameManager.instance.playerIsAlive) {
-                        GameManager.instance.assetManager.get("sounds/pacman_die.ogg", Sound.class).play();
-                    }
-                }
+                } else // kill player if player is not invincible
+                 if (!GameManager.instance.playerIsInvincible) {
+                        player.hp--;
+                        if (GameManager.instance.playerIsAlive) {
+                            GameManager.instance.assetManager.get("sounds/pacman_die.ogg", Sound.class).play();
+                        }
 
+                    }
             }
         }
     }
