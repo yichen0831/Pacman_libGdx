@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
@@ -48,6 +49,14 @@ public class PlayScreen implements Screen {
 
     private Engine engine;
 
+    private AnimationSystem animationSystem;
+    private GhostSystem ghostSystem;
+    private MovementSystem movementSystem;
+    private PillSystem pillSystem;
+    private PlayerSystem playerSystem;
+    private RenderSystem renderSystem;
+    private StateSystem stateSystem;
+
     private TiledMap tiledMap;
     private OrthogonalTiledMapRenderer tiledMapRenderer;
 
@@ -70,7 +79,10 @@ public class PlayScreen implements Screen {
 
     private RayHandler rayHandler;
 
+    private float ambientLight = 0.5f;
+
     private boolean changeScreen;
+    private float changeScreenCountDown = 2.0f;
 
     public PlayScreen(PacMan game) {
         this.game = game;
@@ -85,14 +97,23 @@ public class PlayScreen implements Screen {
         camera.update();
 
         batch = new SpriteBatch();
+
+        playerSystem = new PlayerSystem();
+        ghostSystem = new GhostSystem();
+        movementSystem = new MovementSystem();
+        pillSystem = new PillSystem();
+        animationSystem = new AnimationSystem();
+        renderSystem = new RenderSystem(batch);
+        stateSystem = new StateSystem();
+
         engine = new Engine();
-        engine.addSystem(new PlayerSystem());
-        engine.addSystem(new GhostSystem());
-        engine.addSystem(new PillSystem());
-        engine.addSystem(new MovementSystem());
-        engine.addSystem(new StateSystem());
-        engine.addSystem(new AnimationSystem());
-        engine.addSystem(new RenderSystem(batch));
+        engine.addSystem(playerSystem);
+        engine.addSystem(ghostSystem);
+        engine.addSystem(pillSystem);
+        engine.addSystem(movementSystem);
+        engine.addSystem(stateSystem);
+        engine.addSystem(animationSystem);
+        engine.addSystem(renderSystem);
 
         // box2d
         world = new World(Vector2.Zero, true);
@@ -102,7 +123,7 @@ public class PlayScreen implements Screen {
 
         // box2d light
         rayHandler = new RayHandler(world);
-        rayHandler.setAmbientLight(0.5f);
+        rayHandler.setAmbientLight(ambientLight);
 
         // load map
         tiledMap = new TmxMapLoader().load("map/map.tmx");
@@ -166,9 +187,14 @@ public class PlayScreen implements Screen {
         tiledMapRenderer.setView(camera);
         tiledMapRenderer.render();
 
-        world.step(1 / 60f, 8, 3);
-
         batch.setProjectionMatrix(camera.combined);
+        if (changeScreen) {
+            playerSystem.setProcessing(false);
+            ghostSystem.setProcessing(false);
+            movementSystem.setProcessing(false);
+        } else {
+            world.step(1 / 60f, 8, 3);
+        }
         engine.update(delta);
 
         rayHandler.setCombinedMatrix(camera);
@@ -207,8 +233,19 @@ public class PlayScreen implements Screen {
         }
 
         if (changeScreen) {
-            GameManager.instance.resetGame(GameManager.instance.playerLives <= 0);
-            game.setScreen(new PlayScreen(game));
+            changeScreenCountDown -= delta;
+
+            if (changeScreenCountDown <= 1) {
+                // fade out effect
+                ambientLight -= delta;
+                rayHandler.setAmbientLight(MathUtils.clamp(ambientLight, 0f, 1f));
+                rayHandler.removeAll();
+            }
+
+            if (changeScreenCountDown <= 0) {
+                GameManager.instance.resetGame(GameManager.instance.playerLives <= 0);
+                game.setScreen(new PlayScreen(game));
+            }
         }
     }
 
