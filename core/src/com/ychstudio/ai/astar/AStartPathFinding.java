@@ -2,8 +2,8 @@ package com.ychstudio.ai.astar;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import java.util.ArrayList;
-import java.util.List;
+import com.badlogic.gdx.utils.Array;
+import java.util.Comparator;
 
 public class AStartPathFinding {
 
@@ -25,7 +25,7 @@ public class AStartPathFinding {
             return null;
         }
 
-        List<Node> openNodes = new ArrayList<>();
+        Array<Node> openNodes = new Array<>();
 
         int width = aStarMap.getWidth();
         int height = aStarMap.getHeight();
@@ -38,9 +38,12 @@ public class AStartPathFinding {
         nodes[sourceY][sourceX] = sourceNode;
         openNodes.add(sourceNode);
 
-        while (!openNodes.isEmpty()) {
-            openNodes.sort((node1, node2) -> {
-                return node1.getfCost() - node2.getfCost();
+        while (openNodes.size != 0) {
+            openNodes.sort(new Comparator<Node>() {
+                @Override
+                public int compare(Node node1, Node node2) {
+                    return node1.getfCost() - node2.getfCost();
+                }
             });
 
             Node node = openNodes.get(0);
@@ -101,7 +104,7 @@ public class AStartPathFinding {
             }
 
             node.closed = true;
-            openNodes.remove(node);
+            openNodes.removeValue(node, true);
         }
 
         // no path found

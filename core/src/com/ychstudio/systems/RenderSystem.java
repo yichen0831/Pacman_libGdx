@@ -10,6 +10,7 @@ import com.badlogic.gdx.utils.Array;
 import com.ychstudio.components.TextureComponent;
 import com.ychstudio.components.TransformComponent;
 import com.ychstudio.gamesys.GameManager;
+import java.util.Comparator;
 
 public class RenderSystem extends IteratingSystem {
 
@@ -32,10 +33,14 @@ public class RenderSystem extends IteratingSystem {
     public void update(float deltaTime) {
         super.update(deltaTime);
 
-        renderArray.sort((Entity o1, Entity o2) -> {
-            TransformComponent transform1 = transformM.get(o1);
-            TransformComponent transform2 = transformM.get(o2);
-            return transform2.zIndex - transform1.zIndex;
+        renderArray.sort(new Comparator<Entity>() {
+            @Override
+            public int compare(Entity o1, Entity o2) {
+                TransformComponent transform1 = transformM.get(o1);
+                TransformComponent transform2 = transformM.get(o2);
+                return transform2.zIndex - transform1.zIndex;
+            }
+
         });
 
         batch.begin();
