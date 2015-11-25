@@ -229,7 +229,7 @@ public class PlayScreen implements Screen {
         }
         stage.draw();
 
-        if (GameManager.instance.totalPills <= 0) {
+        if (GameManager.instance.totalPills <= 0 && !changeScreen) {
             GameManager.instance.assetManager.get("sounds/clear.ogg", Sound.class).play();
             changeScreen = true;
         }
