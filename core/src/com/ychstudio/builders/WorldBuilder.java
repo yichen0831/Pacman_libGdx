@@ -26,6 +26,7 @@ import com.badlogic.gdx.physics.box2d.QueryCallback;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
 import com.ychstudio.ai.astar.AStarMap;
+import com.ychstudio.ai.astar.AStartPathFinding;
 import com.ychstudio.components.AnimationComponent;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.components.MovementComponent;
@@ -106,11 +107,11 @@ public class WorldBuilder {
                 wall = false;
                 world.QueryAABB(queryCallback, x + 0.2f, y + 0.2f, x + 0.8f, y + 0.8f);
                 if (wall) {
-                    aStarMap.setXY(x, y, aStarMap.WALL);
+                   aStarMap.getNodeAt(x, y).isWall = true;
                 }
             }
         }
-        GameManager.instance.aStarMap = aStarMap;
+        GameManager.instance.pathfinder = new AStartPathFinding(aStarMap);
 
         // Gate
         MapLayer gateLayer = mapLayers.get("Gate"); // gate layer

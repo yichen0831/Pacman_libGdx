@@ -1,53 +1,33 @@
 package com.ychstudio.ai.astar;
 
-public class Node {
+import com.badlogic.gdx.ai.pfa.Connection;
+import com.badlogic.gdx.ai.pfa.indexed.IndexedNode;
+import com.badlogic.gdx.utils.Array;
 
-    public int x;
-    public int y;
+public class Node implements IndexedNode<Node> {
 
-    public Node prev;
-    public Node next;
+    public final int x;
+    public final int y;
+    public boolean isWall;
+    private final int index;
+    private final Array<Connection<Node>> connections;
 
-    private int gCost;
-    private int hCost;
-    private int fCost;
-
-    public boolean closed;
-
-    public Node(int x, int y) {
-        this(x, y, false);
-    }
-
-    public Node(int x, int y, boolean closed) {
+    public Node(AStarMap map, int x, int y) {
         this.x = x;
         this.y = y;
-        this.closed = closed;
-
-        gCost = 0;
-        hCost = 0;
-        fCost = 0;
+        this.index = x * map.getHeight() + y;
+        this.isWall = false;
+        this.connections = new Array<Connection<Node>>();
     }
 
-    public int getgCost() {
-        return gCost;
+    @Override
+    public int getIndex () {
+        return index;
     }
 
-    public void setgCost(int gCost) {
-        this.gCost = gCost;
-        fCost = gCost + hCost;
-    }
-
-    public int gethCost() {
-        return hCost;
-    }
-
-    public void sethCost(int hCost) {
-        this.hCost = hCost;
-        fCost = gCost + hCost;
-    }
-
-    public int getfCost() {
-        return fCost;
+    @Override
+    public Array<Connection<Node>> getConnections () {
+        return connections;
     }
 
     @Override
