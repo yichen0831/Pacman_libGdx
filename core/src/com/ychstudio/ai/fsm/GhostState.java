@@ -8,7 +8,7 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.RayCastCallback;
 import com.badlogic.gdx.physics.box2d.World;
-import com.ychstudio.ai.astar.AStartPathFinding;
+import com.ychstudio.ai.astar.AStarMap;
 import com.ychstudio.components.GhostComponent;
 import com.ychstudio.gamesys.GameManager;
 import java.util.ArrayList;
@@ -203,7 +203,7 @@ public enum GhostState implements State<GhostAgent> {
 
             // do path finding every 0.1 second
             if (entity.nextNode == null || entity.timer > 0.1f) {
-                entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), GameManager.instance.playerLocation.getPosition(), GameManager.instance.aStarMap);
+                entity.nextNode = GameManager.instance.pathfinder.findNextNode(entity.getPosition(), GameManager.instance.playerLocation.getPosition());
                 entity.timer = 0;
             }
             if (entity.nextNode == null) {
@@ -258,18 +258,20 @@ public enum GhostState implements State<GhostAgent> {
 
             // update path every 0.2f
             if (entity.nextNode == null || entity.timer > 0.2f) {
-                float x = (GameManager.instance.playerLocation.getPosition().x + GameManager.instance.aStarMap.getWidth() / 2);
-                float y = (GameManager.instance.playerLocation.getPosition().y + GameManager.instance.aStarMap.getHeight() / 2);
+                AStarMap map = GameManager.instance.pathfinder.map;
+
+                float x = (GameManager.instance.playerLocation.getPosition().x + map.getWidth() / 2);
+                float y = (GameManager.instance.playerLocation.getPosition().y + map.getHeight() / 2);
 
                 do {
                     x += 1;
                     y += 1;
-                    x = x > GameManager.instance.aStarMap.getWidth() ? x - GameManager.instance.aStarMap.getWidth() : x;
-                    y = y > GameManager.instance.aStarMap.getHeight() ? y - GameManager.instance.aStarMap.getHeight() : y;
-                } while (GameManager.instance.aStarMap.getXY(MathUtils.floor(x), MathUtils.floor(y)) != 0);
+                    x = x > map.getWidth() ? x - map.getWidth() : x;
+                    y = y > map.getHeight() ? y - map.getHeight() : y;
+                } while (map.getNodeAt(MathUtils.floor(x), MathUtils.floor(y)).isWall);
 
                 tmpV1.set(x, y);
-                entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), tmpV1, GameManager.instance.aStarMap);
+                entity.nextNode = GameManager.instance.pathfinder.findNextNode(entity.getPosition(), tmpV1);
                 entity.timer = 0;
             }
 
@@ -310,7 +312,7 @@ public enum GhostState implements State<GhostAgent> {
             // respawn when getting back to the respawning postion
             // update path every 0.2f
             if (entity.nextNode == null || entity.timer > 0.2f) {
-                entity.nextNode = AStartPathFinding.findPath(entity.getPosition(), GameManager.instance.ghostSpawnPos, GameManager.instance.aStarMap);
+                entity.nextNode = GameManager.instance.pathfinder.findNextNode(entity.getPosition(), GameManager.instance.ghostSpawnPos);
                 entity.timer = 0;
             }
 

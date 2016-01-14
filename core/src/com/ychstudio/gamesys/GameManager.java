@@ -6,7 +6,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Disposable;
-import com.ychstudio.ai.astar.AStarMap;
+import com.ychstudio.ai.astar.AStartPathFinding;
 
 public class GameManager implements Disposable {
 
@@ -42,7 +42,7 @@ public class GameManager implements Disposable {
     public boolean playerIsAlive = true;
     private boolean gameOver = false;
 
-    public AStarMap aStarMap;
+    public AStartPathFinding pathfinder;
 
     public Location<Vector2> playerLocation;
 

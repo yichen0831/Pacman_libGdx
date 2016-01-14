@@ -2,12 +2,7 @@ package com.ychstudio.ai.astar;
 
 public class AStarMap {
 
-    public static final int EMPTY = 0;
-    public static final int SOURCE = 1;
-    public static final int TARGET = 2;
-    public static final int WALL = 3;
-
-    private int[][] map;
+    private Node[][] map;
 
     private final int width;
     private final int height;
@@ -16,7 +11,12 @@ public class AStarMap {
         this.width = width;
         this.height = height;
 
-        map = new int[height][width];
+        map = new Node[height][width];
+        for (int y = 0; y < height; y++) {
+           for (int x = 0; x < width; x++) {
+         	  map[y][x] = new Node(this, x, y);
+           }
+       }
     }
 
     public int getWidth() {
@@ -27,12 +27,8 @@ public class AStarMap {
         return height;
     }
 
-    public int getXY(int x, int y) {
+    public Node getNodeAt(int x, int y) {
         return map[y][x];
-    }
-
-    public void setXY(int x, int y, int value) {
-        map[y][x] = value;
     }
 
     @Override
@@ -40,22 +36,7 @@ public class AStarMap {
         StringBuilder stringBuilder = new StringBuilder();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                switch (map[y][x]) {
-                    case EMPTY:
-                        stringBuilder.append(" ");
-                        break;
-                    case SOURCE:
-                        stringBuilder.append("S");
-                        break;
-                    case TARGET:
-                        stringBuilder.append("T");
-                        break;
-                    case WALL:
-                        stringBuilder.append("B");
-                        break;
-                    default:
-                        break;
-                }
+               stringBuilder.append(map[y][x].isWall ? "#" : " ");
             }
             stringBuilder.append("\n");
         }
