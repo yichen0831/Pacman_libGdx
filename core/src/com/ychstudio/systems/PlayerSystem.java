@@ -45,16 +45,16 @@ public class PlayerSystem extends IteratingSystem {
         Body body = movement.body;
 
         if (player.hp > 0) {
-            if (Gdx.input.isKeyPressed(Input.Keys.D) && checkMovable(body, MoveDir.RIGHT)) {
+            if ((Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) && checkMovable(body, MoveDir.RIGHT)) {
                 body.applyLinearImpulse(tmpV1.set(movement.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
 
-            } else if (Gdx.input.isKeyPressed(Input.Keys.A) && checkMovable(body, MoveDir.LEFT)) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) && checkMovable(body, MoveDir.LEFT)) {
                 body.applyLinearImpulse(tmpV1.set(-movement.speed, 0).scl(body.getMass()), body.getWorldCenter(), true);
 
-            } else if (Gdx.input.isKeyPressed(Input.Keys.W) && checkMovable(body, MoveDir.UP)) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) && checkMovable(body, MoveDir.UP)) {
                 body.applyLinearImpulse(tmpV1.set(0, movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
 
-            } else if (Gdx.input.isKeyPressed(Input.Keys.S) && checkMovable(body, MoveDir.DOWN)) {
+            } else if ((Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN))&& checkMovable(body, MoveDir.DOWN)) {
                 body.applyLinearImpulse(tmpV1.set(0, -movement.speed).scl(body.getMass()), body.getWorldCenter(), true);
 
             }
@@ -64,7 +64,7 @@ public class PlayerSystem extends IteratingSystem {
             }
         }
 
-        // player is invincible for 3.0f when spawning
+        // player is invincible for 3 seconds when spawning
         if (GameManager.instance.playerIsInvincible) {
             player.invincibleTimer += deltaTime;
             if (player.invincibleTimer >= 3.0f) {
