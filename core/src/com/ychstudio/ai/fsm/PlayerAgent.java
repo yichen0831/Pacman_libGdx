@@ -9,7 +9,7 @@ import com.ychstudio.components.PlayerComponent;
 public class PlayerAgent implements Telegraph {
 
     public final PlayerComponent playerComponent;
-    public final StateMachine<PlayerAgent> stateMachine;
+    public final StateMachine<PlayerAgent, PlayerState> stateMachine;
 
     public float timer;
 

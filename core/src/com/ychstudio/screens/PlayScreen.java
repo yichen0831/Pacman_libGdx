@@ -216,12 +216,12 @@ public class PlayScreen implements Screen {
         if (GameManager.instance.displayScore < GameManager.instance.score) {
             GameManager.instance.displayScore = Math.min(GameManager.instance.score, GameManager.instance.displayScore + (int) (600 * delta));
         }
-        scoreLabel.setText(stringBuilder.append(GameManager.instance.displayScore).toString());
+        scoreLabel.setText(stringBuilder.append(GameManager.instance.displayScore));
         stringBuilder.setLength(0);
         if (GameManager.instance.displayHighScore < GameManager.instance.highScore) {
             GameManager.instance.displayHighScore = Math.min(GameManager.instance.highScore, GameManager.instance.displayHighScore + (int) (600 * delta));
         }
-        highScoreLabel.setText(stringBuilder.append(GameManager.instance.displayHighScore).toString());
+        highScoreLabel.setText(stringBuilder.append(GameManager.instance.displayHighScore));
         if (GameManager.instance.isGameOver() && !changeScreen) {
             gameOverLabel.setVisible(true);
         } else {

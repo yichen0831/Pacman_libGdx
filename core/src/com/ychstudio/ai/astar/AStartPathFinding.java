@@ -97,6 +97,11 @@ public class AStartPathFinding {
         }
 
         @Override
+        public int getIndex(Node node) {
+            return node.getIndex();
+        }
+
+        @Override
         public Array<Connection<Node>> getConnections(Node fromNode) {
             return fromNode.getConnections();
         }
