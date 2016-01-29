@@ -10,7 +10,7 @@ import com.ychstudio.components.GhostComponent;
 
 public class GhostAgent implements Telegraph {
 
-    public StateMachine<GhostAgent> stateMachine;
+    public StateMachine<GhostAgent, GhostState> stateMachine;
 
     public GhostComponent ghostComponent;
 

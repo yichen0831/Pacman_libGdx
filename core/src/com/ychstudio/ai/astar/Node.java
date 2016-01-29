@@ -1,10 +1,9 @@
 package com.ychstudio.ai.astar;
 
 import com.badlogic.gdx.ai.pfa.Connection;
-import com.badlogic.gdx.ai.pfa.indexed.IndexedNode;
 import com.badlogic.gdx.utils.Array;
 
-public class Node implements IndexedNode<Node> {
+public class Node {
 
     public final int x;
     public final int y;
@@ -20,12 +19,10 @@ public class Node implements IndexedNode<Node> {
         this.connections = new Array<Connection<Node>>();
     }
 
-    @Override
     public int getIndex () {
         return index;
     }
 
-    @Override
     public Array<Connection<Node>> getConnections () {
         return connections;
     }
