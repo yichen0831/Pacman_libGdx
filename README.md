@@ -9,7 +9,7 @@ Pacman game made with [libGdx](http://www.libgdx.com/) and using the extensions 
 ![screenshot](https://github.com/yichen0831/Pacman_libGdx/raw/master/screenshot.png)
 
 ## Play / Download
-Web play: [Link](http://pacman-libgdx.bugs3.com/)
+~Web play: [Link](http://pacman-libgdx.bugs3.com/)~
 
 Java executable: [Link](https://github.com/yichen0831/Pacman_libGdx/releases/download/v1.0/Pacman_libGdx-1.0.jar)
 
