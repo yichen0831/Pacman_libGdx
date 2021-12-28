@@ -108,7 +108,7 @@ public class AStartPathFinding {
 
         @Override
         public int getNodeCount() {
-            return map.getHeight() * map.getHeight();
+            return map.getHeight() * map.getwidth();
         }
    	 
     }
